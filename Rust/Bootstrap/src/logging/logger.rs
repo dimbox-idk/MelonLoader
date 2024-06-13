@@ -3,7 +3,10 @@ use crate::{
     errors::{logerr::LogError, DynErr},
 };
 use colored::Colorize;
-use std::io::Write;
+use std::{io::Write, ffi::CString, sync::Arc};
+
+#[cfg(target_os = "android")]
+use android_liblog_sys::{__android_log_write, LogPriority};
 
 #[derive(Debug)]
 #[repr(u8)]
@@ -12,6 +15,12 @@ pub enum LogLevel {
     Warning,
     Error,
     Debug,
+}
+
+lazy_static::lazy_static! {
+    static ref MELON_LOADER_TAG: Arc<CString> = {
+        CString::new("MelonLoader").expect("CString conversion failed").into()
+    };
 }
 
 impl std::convert::TryFrom<u8> for LogLevel {
@@ -67,34 +76,27 @@ pub fn log_console_file(level: LogLevel, message: &str) -> Result<(), LogError> 
     match level {
         LogLevel::Info => {
             // [19:11:50.321] message
-            let console_string = format!(
-                "{}{}{} {}",
-                "[".bright_black(),
-                timestamp().color(constants::GREEN),
-                "]".bright_black(),
-                message
-            );
+            let console_string = message;
 
             let file_string = format!("[{}] {}", timestamp(), message);
 
-            println!("{}", console_string);
+            crate::log_console!(level, "{}", console_string);
             write(&file_string).map_err(|_| LogError::FailedToWriteToLog)?;
         }
         LogLevel::Warning => {
             //[19:11:50.321] [WARNING] message
-            let console_string = format!("[{}] [WARNING] {}", timestamp(), message);
+            let console_string = message;
 
             let file_string = format!("[{}] [WARNING] {}", timestamp(), message);
 
-            println!("{}", console_string.bright_yellow());
+            crate::log_console!(level, "{}", console_string.bright_yellow());
 
             write(&file_string).map_err(|_| LogError::FailedToWriteToLog)?;
         }
         LogLevel::Error => {
             //[19:11:50.321] [ERROR] message
             let log_string = format!("[{}] [ERROR] {}", timestamp(), message);
-
-            println!("{}", log_string.color(constants::RED));
+            crate::log_console!(level, "{}", message.color(constants::RED));
             write(&log_string).map_err(|_| LogError::FailedToWriteToLog)?;
         }
         LogLevel::Debug => {
@@ -102,20 +104,11 @@ pub fn log_console_file(level: LogLevel, message: &str) -> Result<(), LogError> 
                 return Ok(());
             }
             //[19:11:50.321] [DEBUG] message
-            let console_string = format!(
-                "{}{}{} {}{}{} {}",
-                "[".bright_black(),
-                timestamp().color(constants::GREEN),
-                "]".bright_black(),
-                "[".bright_black(),
-                "DEBUG".color(constants::BLUE),
-                "]".bright_black(),
-                message
-            );
+            let console_string = message;
 
             let file_string = format!("[{}] [DEBUG] {}", timestamp(), message);
 
-            println!("{}", console_string);
+            crate::log_console!(level, "{}", console_string);
             write(&file_string).map_err(|_| LogError::FailedToWriteToLog)?;
         }
     }
@@ -131,6 +124,24 @@ fn timestamp() -> String {
     let time = now.time();
 
     time.format("%H:%M:%S.%3f").to_string()
+}
+
+#[macro_export]
+macro_rules! log_console {
+    ($level:expr, $($arg:tt)*) => {
+        let format = std::ffi::CString::new(format!($($arg)*)).unwrap();
+
+        let prio = match $level {
+            LogLevel::Error => LogPriority::ERROR,
+            LogLevel::Warning => LogPriority::WARN,
+            LogLevel::Info => LogPriority::INFO,
+            LogLevel::Debug => LogPriority::DEBUG,
+        };
+
+        unsafe {
+            __android_log_write(prio as _, MELON_LOADER_TAG.clone().as_ptr(), format.as_ptr());
+        }
+    };
 }
 
 /// Logs a message to the console and log file
