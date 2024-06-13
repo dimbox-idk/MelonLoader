@@ -7,7 +7,7 @@ use std::{
 };
 
 use crate::{
-    debug, errors::{dotneterr::DotnetErr, DynErr}, icalls, logging::logger, melonenv, utils::{self, strings::wide_str}
+    core_android, debug, errors::{dotneterr::DotnetErr, DynErr}, icalls, logging::logger, melonenv, utils::{self, strings::wide_str}
 };
 
 /// These are functions that MelonLoader.NativeHost.dll will fill in, once we call LoadStage1.
@@ -31,6 +31,7 @@ pub struct HostExports {
     pub hook_attach: unsafe fn(*mut *mut c_void, *mut c_void),
     pub hook_detach: unsafe fn(*mut *mut c_void, *mut c_void),
     pub log_console: unsafe fn(*const c_char),
+    pub get_java_vm: unsafe fn() -> *mut *const c_void,
 }
 
 // Initializing the host imports as a static variable. Later on this is replaced with a filled in version of the struct.
@@ -79,6 +80,7 @@ pub fn init() -> Result<(), DynErr> {
         hook_attach: icalls::bootstrap_interop::attach,
         hook_detach: icalls::bootstrap_interop::detach,
         log_console: logger::log_console_interop,
+        get_java_vm: core_android::get_raw_java_vm,
     };
 
     debug!("[Dotnet] Invoking LoadStage1")?;
