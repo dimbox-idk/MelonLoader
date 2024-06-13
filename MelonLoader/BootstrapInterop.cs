@@ -13,7 +13,7 @@ namespace MelonLoader
 #if NET6_0_OR_GREATER
         internal static delegate* unmanaged<void**, void*, void> HookAttach;
         internal static delegate* unmanaged<void**, void*, void> HookDetach;
-        internal static delegate* unmanaged<byte*, void> LogConsole;
+        internal static delegate* unmanaged<string, void> LogConsole;
 #endif
 
         internal static void SetDefaultConsoleTitleWithGameName([MarshalAs(UnmanagedType.LPStr)] string GameName, [MarshalAs(UnmanagedType.LPStr)] string GameVersion = null)
@@ -60,6 +60,8 @@ namespace MelonLoader
         public static extern void NativeHookAttach(IntPtr target, IntPtr detour);
         [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern void NativeHookDetach(IntPtr target, IntPtr detour);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern void NativeLogConsole(string msg);
 #else
         public static void NativeHookAttach(IntPtr target, IntPtr detour)
         {
@@ -84,11 +86,7 @@ namespace MelonLoader
 
         public static unsafe void NativeLogConsole(string msg)
         {
-            var utf8Bytes = System.Text.Encoding.UTF8.GetBytes(msg);
-            fixed (byte* pMessage = utf8Bytes)
-            {
-                LogConsole(pMessage);
-            }
+            LogConsole(msg);
         }
 #endif
     }
