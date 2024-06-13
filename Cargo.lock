@@ -3,6 +3,28 @@
 version = 3
 
 [[package]]
+name = "Bootstrap"
+version = "0.1.0"
+dependencies = [
+ "android_liblog-sys",
+ "chrono",
+ "clap",
+ "colored",
+ "ctor",
+ "dobby-rs",
+ "exe",
+ "jni",
+ "lazy_static",
+ "libc",
+ "libc-stdhandle",
+ "ndk",
+ "ndk-sys",
+ "netcorehost",
+ "thiserror",
+ "unity-rs",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -975,28 +997,6 @@ dependencies = [
  "block-buffer 0.9.0",
  "digest 0.9.0",
  "opaque-debug",
-]
-
-[[package]]
-name = "melon_bootstrap"
-version = "0.1.0"
-dependencies = [
- "android_liblog-sys",
- "chrono",
- "clap",
- "colored",
- "ctor",
- "dobby-rs",
- "exe",
- "jni",
- "lazy_static",
- "libc",
- "libc-stdhandle",
- "ndk",
- "ndk-sys",
- "netcorehost",
- "thiserror",
- "unity-rs",
 ]
 
 [[package]]
