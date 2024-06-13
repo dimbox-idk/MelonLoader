@@ -1,11 +1,17 @@
-use std::path::{PathBuf};
+use std::path::PathBuf;
 
 use lazy_static::lazy_static;
 use unity_rs::runtime::RuntimeType;
 
-use crate::{errors::DynErr, internal_failure, runtime, constants::W};
+use crate::{
+    constants::W, runtime,
+    errors::DynErr, internal_failure,
+};
 
-
+#[cfg(target_os = "android")]
+use jni::{
+    objects::{JObject, JString}, JNIEnv
+};
 
 lazy_static! {
     pub static ref BASE_DIR: W<PathBuf> = {
@@ -37,6 +43,8 @@ lazy_static! {
     pub static ref SUPPORT_MODULES_FOLDER: W<PathBuf> = W(DEPENDENCIES_FOLDER.join("SupportModules"));
     pub static ref PRELOAD_DLL: W<PathBuf> = W(SUPPORT_MODULES_FOLDER.join("Preload.dll"));
 }
+
+static mut DATA_DIR: Option<String> = None;
 
 pub fn runtime_dir() -> Result<PathBuf, DynErr> {
     let runtime = runtime!()?;
@@ -78,5 +86,49 @@ pub fn get_managed_dir() -> Result<PathBuf, DynErr> {
                 false => Err("Failed to find the managed directory!")?,
             }
         }
+    }
+}
+
+#[cfg(target_os = "android")]
+pub fn cache_data_dir(env: &mut JNIEnv) {
+    use jni::objects::JValueGen;
+
+    let unity_class_name = "com/unity3d/player/UnityPlayer";
+    let unity_class = &env
+        .find_class(unity_class_name)
+        .expect("Failed to find class com/unity3d/player/UnityPlayer");
+
+    let current_activity_obj: JObject = env
+        .get_static_field(unity_class, "currentActivity", "Landroid/app/Activity;")
+        .expect("Failed to get static field currentActivity")
+        .l().unwrap();
+
+    let ext_file_obj: JObject = env
+        .call_method(
+            current_activity_obj,
+            "getExternalFilesDir",
+            "(Ljava/lang/String;)Ljava/io/File;",
+            &[JValueGen::from(&JObject::null())],
+        )
+        .expect("Failed to invoke getExternalFilesDir()")
+        .l().unwrap();
+
+    let file_string: JString = env
+        .call_method(&ext_file_obj, "toString", "()Ljava/lang/String;", &[])
+        .expect("Failed to invoke toString()")
+        .l()
+        .unwrap()
+        .into();
+
+    let str_data: String = env
+        .get_string(&file_string)
+        .expect("Failed to get string from jstring")
+        .into();
+
+    env.delete_local_ref(ext_file_obj).expect("Failed to delete local ref");
+    env.delete_local_ref(file_string).expect("Failed to delete local ref");
+
+    unsafe {
+        DATA_DIR = Some(str_data.clone());
     }
 }

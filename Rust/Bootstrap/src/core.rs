@@ -11,7 +11,8 @@ fn startup() {
 
 fn init() -> Result<(), DynErr> {
     console::init()?;
-    logger::init()?;
+
+    base_assembly::init(crate::runtime!()?)?;
 
     hooks::init_hook::hook()?;
 
