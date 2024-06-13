@@ -7,6 +7,7 @@
             BootstrapInterop.HookAttach = NativeEntryPoint.Exports.HookAttach;
             BootstrapInterop.HookDetach = NativeEntryPoint.Exports.HookDetach;
             BootstrapInterop.LogConsole = NativeEntryPoint.Exports.LogConsole;
+            BootstrapInterop.GetJavaVM = NativeEntryPoint.Exports.GetJavaVM;
 
             Core.Initialize();
         }
