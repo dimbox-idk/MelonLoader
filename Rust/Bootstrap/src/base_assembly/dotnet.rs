@@ -1,5 +1,5 @@
 use lazy_static::lazy_static;
-use netcorehost::{nethost, pdcstr};
+use netcorehost::{pdcstr, hostfxr::Hostfxr};
 use std::{
     ffi::c_void,
     ptr::{addr_of, addr_of_mut, null_mut},
@@ -48,14 +48,18 @@ lazy_static! {
 pub fn init() -> Result<(), DynErr> {
     let runtime_dir = melonenv::paths::runtime_dir()?;
 
-    let hostfxr = nethost::load_hostfxr().map_err(|_| DotnetErr::FailedHostFXRLoad)?;
+    let hostfxr = Hostfxr::load_from_path("libhostfxr.so").map_err(|_| DotnetErr::FailedHostFXRLoad)?;
 
     let config_path = runtime_dir.join("MelonLoader.runtimeconfig.json");
     if !config_path.exists() {
         return Err(DotnetErr::RuntimeConfig.into());
     }
 
-    let context = hostfxr.initialize_for_runtime_config(utils::strings::pdcstr(config_path)?)?;
+    let dotnet_path = melonenv::paths::get_dotnet_path()?;
+
+    let context = hostfxr.initialize_for_runtime_config_with_dotnet_root(
+        utils::strings::pdcstr(config_path)?,
+        utils::strings::pdcstr(dotnet_path.to_path_buf())?)?;
 
     let loader = context.get_delegate_loader_for_assembly(utils::strings::pdcstr(
         runtime_dir.join("MelonLoader.NativeHost.dll"),
