@@ -13,10 +13,10 @@ namespace MelonLoader.Utils
 #if !NET6_0_OR_GREATER
             "net35";
 #else
-            "net6";
+            "net8";
 #endif
 
-        public static bool IsDotnetRuntime { get; } = OurRuntimeName == "net6";
+        public static bool IsDotnetRuntime { get; } = OurRuntimeName == "net8";
         public static bool IsMonoRuntime { get; } = !IsDotnetRuntime;
 
         public static string MelonLoaderDirectory { get; internal set; }
@@ -39,8 +39,8 @@ namespace MelonLoader.Utils
         public static string MelonLoaderLogsDirectory => Path.Combine(MelonLoaderDirectory, "Logs");
         public static string OurRuntimeDirectory => Path.Combine(MelonLoaderDirectory, OurRuntimeName);
 
-        public static string GameExecutableName => Path.GetFileNameWithoutExtension(GameExecutablePath);
-        public static string UnityGameDataDirectory => Path.Combine(GameRootDirectory, GameExecutableName + "_Data");
+        public static string GameExecutableName => Path.GetFileNameWithoutExtension(GameExecutablePath); // TODO: should return the package name probably; could pass it through HostExports?
+        public static string UnityGameDataDirectory => GameRootDirectory;
         public static string Il2CppDataDirectory => Path.Combine(UnityGameDataDirectory, "il2cpp_data");
         public static string UnityPlayerPath => Path.Combine(GameRootDirectory, "UnityPlayer.dll");
 

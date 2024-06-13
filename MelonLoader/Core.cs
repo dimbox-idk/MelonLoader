@@ -9,6 +9,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using bHapticsLib;
 using System.Threading;
+using System.Text;
+
 
 #if NET35
 using MelonLoader.CompatibilityLayers;
@@ -35,7 +37,7 @@ namespace MelonLoader
             var runtimeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
             var runtimeDirInfo = new DirectoryInfo(runtimeFolder);
             MelonEnvironment.MelonLoaderDirectory = runtimeDirInfo.Parent!.FullName;
-            MelonEnvironment.GameRootDirectory = Path.GetDirectoryName(MelonEnvironment.GameExecutablePath);
+            MelonEnvironment.GameRootDirectory = runtimeDirInfo.Parent!.Parent!.FullName;
 
             MelonLaunchOptions.Load();
             MelonLogger.Setup();
@@ -80,6 +82,10 @@ namespace MelonLoader
             catch (SecurityException)
             {
                 MelonDebug.Msg("[MonoLibrary] Caught SecurityException, assuming not running under mono and continuing with init");
+            }
+            catch (MissingMethodException)
+            {
+                MelonDebug.Msg("[MonoLibrary] Caught MissingMethodException, assuming not running under mono and continuing with init");
             }
 
             HarmonyInstance = new HarmonyLib.Harmony(BuildInfo.Name);
@@ -155,7 +161,6 @@ namespace MelonLoader
             MelonLogger.MsgDirect("------------------------------");
             MelonLogger.MsgDirect(GetVersionString());
             MelonLogger.MsgDirect($"OS: {GetOSVersion()}");
-            MelonLogger.MsgDirect($"Hash Code: {MelonUtils.HashCode}");
             MelonLogger.MsgDirect("------------------------------");
             var typeString = MelonUtils.IsGameIl2Cpp() ? "Il2cpp" : MelonUtils.IsOldMono() ? "Mono" : "MonoBleedingEdge";
             MelonLogger.MsgDirect($"Game Type: {typeString}");
@@ -187,6 +192,29 @@ namespace MelonLoader
         
         internal static string GetOSVersion()
         {
+            if (MelonUtils.IsAndroid)
+            {
+                StringBuilder sb = new();
+                sb.Append("Android ");
+                int apiLevel = Environment.OSVersion.Version.Major;
+                // https://apilevels.com/
+                string androidVersion = apiLevel switch
+                {
+                    27 => "8.1",
+                    28 => "9",
+                    29 => "10",
+                    30 => "11",
+                    31 => "12",
+                    32 => "12L",
+                    33 => "13",
+                    34 => "14",
+                    35 => "15",
+                };
+                sb.Append(androidVersion);
+
+                return sb.ToString();
+            }
+
             if (MelonUtils.IsUnix || MelonUtils.IsMac)
                 return Environment.OSVersion.VersionString;
             
