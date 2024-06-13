@@ -30,13 +30,12 @@ namespace MelonLoader
     
         internal static void Setup(AppDomain domain)
         {
-            using (var sha = SHA256.Create()) 
-                HashCode = string.Concat(sha.ComputeHash(File.ReadAllBytes(Assembly.GetExecutingAssembly().Location)).Select(b => b.ToString("X2")).ToArray());
-
+            // SHA256.Create() does not work on linux-bionic
+            HashCode = string.Empty;
 
             Core.WelcomeMessage();
 
-            if(MelonEnvironment.IsMonoRuntime)
+            if (MelonEnvironment.IsMonoRuntime)
                 SetCurrentDomainBaseDirectory(MelonEnvironment.GameRootDirectory, domain);
 
             if (!Directory.Exists(MelonEnvironment.UserDataDirectory))
@@ -103,9 +102,11 @@ namespace MelonLoader
 
         public static PlatformID GetPlatform => Environment.OSVersion.Platform;
 
-        public static bool IsUnix => GetPlatform is PlatformID.Unix;
-        public static bool IsWindows => GetPlatform is PlatformID.Win32NT or PlatformID.Win32S or PlatformID.Win32Windows or PlatformID.WinCE;
-        public static bool IsMac => GetPlatform is PlatformID.MacOSX;
+        // lazy but this is lemon so android/unix are the only options
+        public static bool IsUnix => true;
+        public static bool IsAndroid => true;
+        public static bool IsWindows => false;
+        public static bool IsMac => false;
 
         public static void SetCurrentDomainBaseDirectory(string dirpath, AppDomain domain = null)
         {
@@ -392,10 +393,10 @@ namespace MelonLoader
 #endif
 
 
-        public static bool IsGameIl2Cpp() => Directory.Exists(MelonEnvironment.Il2CppDataDirectory);
+        // also lazy but this is lemon so il2cpp is the only option
+        public static bool IsGameIl2Cpp() => true;
 
-        public static bool IsOldMono() => File.Exists(MelonEnvironment.UnityGameDataDirectory + "\\Mono\\mono.dll") || 
-                                          File.Exists(MelonEnvironment.UnityGameDataDirectory + "\\Mono\\libmono.so");
+        public static bool IsOldMono() => false;
 
         public static bool IsUnderWineOrSteamProton() => WineGetVersion is not null;
 

@@ -9,6 +9,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using bHapticsLib;
 using System.Threading;
+using System.Text;
+
 
 #if NET35
 using MelonLoader.CompatibilityLayers;
@@ -34,7 +36,7 @@ namespace MelonLoader
             var runtimeFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
             var runtimeDirInfo = new DirectoryInfo(runtimeFolder);
             MelonEnvironment.MelonLoaderDirectory = runtimeDirInfo.Parent!.FullName;
-            MelonEnvironment.GameRootDirectory = Path.GetDirectoryName(MelonEnvironment.GameExecutablePath);
+            MelonEnvironment.GameRootDirectory = runtimeDirInfo.Parent!.Parent!.FullName;
 
             MelonLaunchOptions.Load();
             MelonLogger.Setup();
@@ -70,6 +72,10 @@ namespace MelonLoader
             catch (SecurityException)
             {
                 MelonDebug.Msg("[MonoLibrary] Caught SecurityException, assuming not running under mono and continuing with init");
+            }
+            catch (MissingMethodException)
+            {
+                MelonDebug.Msg("[MonoLibrary] Caught MissingMethodException, assuming not running under mono and continuing with init");
             }
 
 #if NET6_0
@@ -186,7 +192,6 @@ namespace MelonLoader
 
             MelonEnvironment.PrintEnvironment();
         }
-
         
         internal static void Quit()
         {
