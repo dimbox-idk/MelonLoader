@@ -1,4 +1,4 @@
-use crate::errors::{DynErr};
+use crate::errors::DynErr;
 use std::marker::PhantomData;
 use std::ops::Deref;
 use std::ffi::c_void;

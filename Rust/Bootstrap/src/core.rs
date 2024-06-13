@@ -1,6 +1,6 @@
 use ctor::ctor;
 
-use crate::{console, errors::DynErr, hooks, internal_failure, logging::logger};
+use crate::{console, errors::DynErr, hooks, internal_failure, base_assembly};
 
 #[ctor]
 fn startup() {
