@@ -22,9 +22,9 @@ fn unload(_: JNIEnv, _: JClass) {
 }
 
 fn load_bootstrap(env: &JNIEnv) {
-    let bootstrap_lib = load_lib(&PathBuf::from("libmelon_bootstrap.so"), libc::RTLD_LAZY)
+    let bootstrap_lib = load_lib(&PathBuf::from("libBootstrap.so"), libc::RTLD_LAZY)
         .unwrap_or_else(|e| {
-            error!("Failed to load libmelon_bootstrap.so: {}", e.to_string());
+            error!("Failed to load libBootstrap.so: {}", e.to_string());
 
             let dl_error = unsafe { libc::dlerror() };
             let error_message = unsafe {
