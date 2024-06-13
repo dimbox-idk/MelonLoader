@@ -381,3 +381,7 @@ x64
 
 # JetBrains Rider
 .idea/
+
+# Android Binaries
+Rust/MelonProxy/jniLibs/
+Rust/Bootstrap/jniLibs/
