@@ -24,3 +24,5 @@ pub mod melonenv;
 pub mod utils;
 
 pub mod core;
+#[cfg(target_os = "android")]
+pub mod core_android;

@@ -144,12 +144,12 @@ fn timestamp() -> String {
 macro_rules! log {
     //case 1: empty
     () => {
-        $crate::logging::logger::log_console_file($crate::logging::logger::LogLevel::Info, "")
+        _ = $crate::logging::logger::log_console_file($crate::logging::logger::LogLevel::Info, "")
     };
 
     //case 3: multiple arguments
     ($($arg:tt)*) => {{
-        $crate::logging::logger::log_console_file($crate::logging::logger::LogLevel::Info, &format_args!($($arg)*).to_string())
+        _ = $crate::logging::logger::log_console_file($crate::logging::logger::LogLevel::Info, &format_args!($($arg)*).to_string())
     }};
 }
 
