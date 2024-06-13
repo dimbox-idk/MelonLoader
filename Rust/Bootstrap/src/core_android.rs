@@ -16,6 +16,8 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _: *mut c_void) -> jint {
     paths::cache_data_dir(&mut env);
     crate::logging::logger::init().expect("Failed to initialize logger!");
 
+    // TODO: copy dotnet runtime into /data/data
+
     log!("JNI initialized!");
     
     catch_unwind(|| JNI_VERSION_1_6).unwrap_or(INVALID_JNI_VERSION)
