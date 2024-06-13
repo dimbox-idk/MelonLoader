@@ -14,7 +14,7 @@ using System.Threading;
 using MelonLoader.CompatibilityLayers;
 #endif
 
-#if NET6_0
+#if NET6_0_OR_GREATER
 using MelonLoader.CoreClrUtils;
 #endif
 
@@ -83,9 +83,8 @@ namespace MelonLoader
 #endif
 
             HarmonyInstance = new HarmonyLib.Harmony(BuildInfo.Name);
-            Fixes.DetourContextDisposeFix.Install();
-
-#if NET6_0
+            
+#if NET6_0_OR_GREATER
             // if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             //  NativeStackWalk.LogNativeStackTrace();
 

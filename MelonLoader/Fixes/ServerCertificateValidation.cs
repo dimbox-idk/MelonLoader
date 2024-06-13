@@ -1,4 +1,4 @@
-﻿#if !NET6_0
+﻿#if !NET6_0_OR_GREATER
 using System;
 using System.Net;
 using System.Net.Security;
@@ -10,7 +10,7 @@ namespace MelonLoader.Fixes
 {
     internal static class ServerCertificateValidation
     {
-#if !NET6_0
+#if !NET6_0_OR_GREATER
         internal static void Install()
         {
             try

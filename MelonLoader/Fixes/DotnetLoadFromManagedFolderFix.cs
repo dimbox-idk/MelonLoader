@@ -1,4 +1,4 @@
-﻿#if NET6_0
+﻿#if NET6_0_OR_GREATER
 using MelonLoader.Utils;
 using System.IO;
 using System.Reflection;
@@ -10,7 +10,7 @@ namespace MelonLoader.Fixes
     internal static class DotnetLoadFromManagedFolderFix
     {
 
-#if !NET6_0
+#if !NET6_0_OR_GREATER
         internal static void Install()
         {
         }
