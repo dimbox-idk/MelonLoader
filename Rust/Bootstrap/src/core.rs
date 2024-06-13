@@ -1,8 +1,6 @@
-use ctor::ctor;
-
 use crate::{console, errors::DynErr, hooks, internal_failure, base_assembly};
 
-#[ctor]
+#[no_mangle]
 fn startup() {
     init().unwrap_or_else(|e| {
         internal_failure!("Failed to initialize MelonLoader: {}", e.to_string());
