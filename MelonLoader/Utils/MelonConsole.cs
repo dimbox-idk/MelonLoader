@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
@@ -38,32 +37,23 @@ internal static class MelonConsole
 
     internal static void WriteLine(string txt)
     {
-        if (MelonUtils.IsUnderWineOrSteamProton() || !MelonUtils.IsWindows || MelonLaunchOptions.Console.ShouldHide)
-        {
-            Console.WriteLine(txt);
-            return;
-        }
-        ConsoleOutWriter.WriteLine(txt);
+#if NET6_0
+        BootstrapInterop.NativeLogConsole(txt);
+#endif
     }
 
     internal static void WriteLine(object txt)
     {
-        if (MelonUtils.IsUnderWineOrSteamProton() || !MelonUtils.IsWindows || MelonLaunchOptions.Console.ShouldHide)
-        {
-            Console.WriteLine(txt.ToString());
-            return;
-        }
-        ConsoleOutWriter.WriteLine(txt.ToString());
+#if NET6_0
+        BootstrapInterop.NativeLogConsole(txt.ToString());
+#endif
     }
 
     internal static void WriteLine()
     {
-        if (MelonUtils.IsUnderWineOrSteamProton() || !MelonUtils.IsWindows || MelonLaunchOptions.Console.ShouldHide)
-        {
-            Console.WriteLine();
-            return;
-        }
-        ConsoleOutWriter.WriteLine("");
+#if NET6_0
+        BootstrapInterop.NativeLogConsole("");
+#endif
     }
 
     [DllImport("kernel32.dll", SetLastError = true)]

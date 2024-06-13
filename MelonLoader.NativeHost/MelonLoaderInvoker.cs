@@ -6,6 +6,7 @@
         {
             BootstrapInterop.HookAttach = NativeEntryPoint.Exports.HookAttach;
             BootstrapInterop.HookDetach = NativeEntryPoint.Exports.HookDetach;
+            BootstrapInterop.LogConsole = NativeEntryPoint.Exports.LogConsole;
 
             Core.Initialize();
         }

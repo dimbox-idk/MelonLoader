@@ -5,5 +5,6 @@ namespace MelonLoader.NativeHost
     {
         internal delegate* unmanaged<void**, void*, void> HookAttach;
         internal delegate* unmanaged<void**, void*, void> HookDetach;
+        internal delegate* unmanaged<byte*, void> LogConsole;
     }
 }

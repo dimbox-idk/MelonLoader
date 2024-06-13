@@ -3,7 +3,7 @@ use crate::{
     errors::{logerr::LogError, DynErr},
 };
 use colored::Colorize;
-use std::{io::Write, ffi::CString, sync::Arc};
+use std::{io::Write, ffi::{CString, c_char}, sync::Arc};
 
 #[cfg(target_os = "android")]
 use android_liblog_sys::{__android_log_write, LogPriority};
@@ -124,6 +124,11 @@ fn timestamp() -> String {
     let time = now.time();
 
     time.format("%H:%M:%S.%3f").to_string()
+}
+
+pub unsafe fn log_console_interop(input: *const c_char) {
+    let input = std::ffi::CStr::from_ptr(input).to_string_lossy();
+    crate::log_console!(LogLevel::Info, "{}", input);
 }
 
 #[macro_export]
