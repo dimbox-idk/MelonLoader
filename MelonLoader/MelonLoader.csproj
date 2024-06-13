@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net35;net6</TargetFrameworks>
+		<TargetFrameworks>net35;net8</TargetFrameworks>
 		<LangVersion>Latest</LangVersion>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -51,5 +51,19 @@
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\classdata.tpk" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8'">
+	  <PackageReference Include="AsmResolver">
+	    <Version>5.5.1</Version>
+	  </PackageReference>
+	  <PackageReference Include="AsmResolver.DotNet">
+	    <Version>5.5.1</Version>
+	  </PackageReference>
+	  <PackageReference Include="AsmResolver.PE">
+	    <Version>5.5.1</Version>
+	  </PackageReference>
+	  <PackageReference Include="Microsoft.Diagnostics.Runtime">
+	    <Version>3.1.512801</Version>
+	  </PackageReference>
 	</ItemGroup>
 </Project>

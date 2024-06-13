@@ -138,7 +138,7 @@ namespace MelonLoader.Utils
 
             var ghbnPtr = wsock32.GetNativeLibraryExport("gethostbyname");
 
-#if NET6_0
+#if NET6_0_OR_GREATER
             delegate* unmanaged[Cdecl]<byte*, hostent*> detourPtr = &gethostbyname_hook;
 #else
             var detourPtr = Marshal.GetFunctionPointerForDelegate((gethostbyname_delegate)gethostbyname_hook);
@@ -160,7 +160,7 @@ namespace MelonLoader.Utils
 
                 var gaiPtr = ws2_32.GetNativeLibraryExport("getaddrinfo");
 
-#if NET6_0
+#if NET6_0_OR_GREATER
                 delegate* unmanaged[Cdecl]<byte*, byte*, addrinfo*, addrinfo**, int> detourPtr2 = &getaddrinfo_hook;
 #else
                 var detourPtr2 = Marshal.GetFunctionPointerForDelegate((getaddrinfo_delegate)getaddrinfo_hook);
@@ -171,7 +171,7 @@ namespace MelonLoader.Utils
             }
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 #endif
         private static hostent* gethostbyname_hook(byte* name)
@@ -201,7 +201,7 @@ namespace MelonLoader.Utils
             return ret;
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 #endif
         private static int getaddrinfo_hook(byte* pNodeName, byte* pServiceName, addrinfo* pHints, addrinfo** ppResult)

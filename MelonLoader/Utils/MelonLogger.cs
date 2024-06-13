@@ -75,7 +75,7 @@ namespace MelonLoader
                 }
             }
 
-#if !NET6_0
+#if !NET6_0_OR_GREATER
             LatestLogStream = File.Open(Path.Combine(MelonEnvironment.MelonLoaderDirectory, "Latest.log"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
             CachedLogStream = File.Open(Path.Combine(MelonEnvironment.MelonLoaderLogsDirectory, $"{DateTime.Now.ToString("%y-%M-%d_%H-%m-%s")}.log"), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
 #else

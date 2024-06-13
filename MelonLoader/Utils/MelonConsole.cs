@@ -37,21 +37,21 @@ internal static class MelonConsole
 
     internal static void WriteLine(string txt)
     {
-#if NET6_0
+#if NET6_0_OR_GREATER
         BootstrapInterop.NativeLogConsole(txt);
 #endif
     }
 
     internal static void WriteLine(object txt)
     {
-#if NET6_0
+#if NET6_0_OR_GREATER
         BootstrapInterop.NativeLogConsole(txt.ToString());
 #endif
     }
 
     internal static void WriteLine()
     {
-#if NET6_0
+#if NET6_0_OR_GREATER
         BootstrapInterop.NativeLogConsole("");
 #endif
     }

@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if NET6_0
+#if NET6_0_OR_GREATER
 using MelonLoader.CoreClrUtils;
 #endif
 
@@ -10,7 +10,7 @@ namespace MelonLoader
 {
     internal static unsafe class BootstrapInterop
     {
-#if NET6_0
+#if NET6_0_OR_GREATER
         internal static delegate* unmanaged<void**, void*, void> HookAttach;
         internal static delegate* unmanaged<void**, void*, void> HookDetach;
         internal static delegate* unmanaged<byte*, void> LogConsole;
@@ -55,7 +55,7 @@ namespace MelonLoader
             EnableMenuItem(GetSystemMenu(mainWindow, 0), SC_CLOSE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
         }
 
-#if !NET6_0
+#if !NET6_0_OR_GREATER
         [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern void NativeHookAttach(IntPtr target, IntPtr detour);
         [MethodImpl(MethodImplOptions.InternalCall)]
