@@ -23,17 +23,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "MelonProxy"
-version = "0.1.0"
-dependencies = [
- "ctor",
- "libloading 0.8.1",
- "msgbox",
- "proxygen-macros",
- "winapi",
-]
-
-[[package]]
 name = "addr2line"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1280,16 +1269,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "libloading"
-version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c571b676ddfc9a8c12f1f3d3085a7b163966a8fd8098a90640953ce5f6170161"
-dependencies = [
- "cfg-if",
- "windows-sys",
-]
-
-[[package]]
 name = "linux-raw-sys"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1621,15 +1600,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2dd5e8a1f1029c43224ad5898e50140c2aebb1705f19e67c918ebf5b9e797fe1"
 dependencies = [
  "unicode-ident",
-]
-
-[[package]]
-name = "proxygen-macros"
-version = "0.5.0"
-source = "git+https://github.com/RinLovesYou/proxygen#c549e4fad7cd50e1d3db252c97f2e1e94713d869"
-dependencies = [
- "quote",
- "syn 2.0.44",
 ]
 
 [[package]]
@@ -2176,7 +2146,7 @@ version = "0.1.0"
 source = "git+https://github.com/RinLovesYou/Ferrex/?rev=77d114c#77d114c08fa57609b2cfcb1b9cb4572f53c60259"
 dependencies = [
  "libc",
- "libloading 0.7.4",
+ "libloading",
  "thiserror",
  "winapi",
 ]
