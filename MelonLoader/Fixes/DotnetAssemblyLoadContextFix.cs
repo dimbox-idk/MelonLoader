@@ -46,12 +46,6 @@ namespace MelonLoader.Fixes
             if(MelonDebug.IsEnabled() && !Environment.StackTrace.Contains("HarmonyLib"))
                 MelonDebug.Msg($"[.NET AssemblyLoadContext Fix] Redirecting Assembly.Load call with {rawAssembly.Length}-byte assembly to AssemblyLoadContext.Default. Mod Devs: You may wish to use this explictly.");
 
-            var (ok, reason) = AssemblyVerifier.VerifyByteArray(rawAssembly);
-            if (!ok)
-            {
-                throw new BadImageFormatException();
-            }
-
             __result = DefaultContextInternalLoad(rawAssembly, rawSymbolStore);
 
             //Prevent loading in non-default context, which is default behaviour of Assembly.Load
@@ -63,13 +57,6 @@ namespace MelonLoader.Fixes
             MelonDebug.Msg($"[.NET AssemblyLoadContext Fix] Redirecting Assembly.LoadFile({path}) call to AssemblyLoadContext.Default.LoadFromAssemblyPath. Mod Devs: You may wish to use this explictly.");
 
             string normalizedPath = Path.GetFullPath(path);
-
-            //Don't need to verify here, as we're passing to the ALC.
-            //var (ok, reason) = AssemblyVerifier.VerifyFile(normalizedPath);
-            //if (!ok)
-            //{
-            //    throw new BadImageFormatException();
-            //}
 
             lock (s_loadfile)
             {
@@ -86,16 +73,6 @@ namespace MelonLoader.Fixes
 
         public static bool PreAlcLoadFromPath(string ilPath)
         {
-            //MelonDebug.Msg($"[ALC FromPath] Validating {ilPath}...");
-
-            //Simple pass-to-verifier and throw if bad.
-            var (ok, reason) = AssemblyVerifier.VerifyFile(ilPath);
-            if (!ok)
-            {
-                throw new BadImageFormatException();
-            }
-
-            //Continue to run the original runtime QCall.
             return true;
         }
 
@@ -105,13 +82,6 @@ namespace MelonLoader.Fixes
 
             byte[] assemblyBytes = new byte[iAssemblyArrayLen];
             Marshal.Copy(ptrAssemblyArray, assemblyBytes, 0, iAssemblyArrayLen);
-
-            //Once again, pass to verifier and throw if bad.
-            var (ok, reason) = AssemblyVerifier.VerifyByteArray(assemblyBytes);
-            if (!ok)
-            {
-                throw new BadImageFormatException();
-            }
 
             //And once again, continue to run the runtime QCall.
             return true;
