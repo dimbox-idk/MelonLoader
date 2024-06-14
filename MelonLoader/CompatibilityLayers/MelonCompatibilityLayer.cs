@@ -38,7 +38,9 @@ namespace MelonLoader
             CheckGameLayerWithPlatform($"{name}_Mono", () => MelonUtils.IsGameIl2Cpp());
             CheckGameLayerWithPlatform($"{name}_Il2Cpp", () => !MelonUtils.IsGameIl2Cpp());
 
-            name = name.Substring(0, name.IndexOf(' ') - 1);
+            try { name = name.Substring(0, name.IndexOf(' ') - 1); }
+            catch { }
+
             CheckGameLayerWithPlatform(name, () => false);
             CheckGameLayerWithPlatform($"{name}_Mono", () => MelonUtils.IsGameIl2Cpp());
             CheckGameLayerWithPlatform($"{name}_Il2Cpp", () => !MelonUtils.IsGameIl2Cpp());
