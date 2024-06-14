@@ -36,11 +36,3 @@ pub unsafe fn get_raw_java_vm() -> *mut *const c_void {
     let vm = mutex.as_ref().expect("JavaVM not initialized");
     vm.get_java_vm_pointer() as *mut *const c_void
 }
-
-use std::ffi::{CString, c_char};
-#[no_mangle]
-pub extern "C" fn print_string(input: *const c_char) {
-    unsafe {
-        android_liblog_sys::__android_log_write(4, CString::new("MelonLoader").expect("CString conversion failed").as_ptr(), input);
-    }
-}
