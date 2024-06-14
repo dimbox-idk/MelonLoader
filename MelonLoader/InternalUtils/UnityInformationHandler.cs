@@ -79,20 +79,25 @@ namespace MelonLoader.InternalUtils
             try
             {
                 string bundlePath = Path.Combine(gameDataPath, "globalgamemanagers");
-                if (!File.Exists(bundlePath))
+                if (!APKAssetManager.DoesAssetExist(bundlePath))
                     bundlePath = Path.Combine(gameDataPath, "mainData");
 
-                if (!File.Exists(bundlePath))
+                if (!APKAssetManager.DoesAssetExist(bundlePath))
                 {
                     bundlePath = Path.Combine(gameDataPath, "data.unity3d");
-                    if (!File.Exists(bundlePath))
+                    if (!APKAssetManager.DoesAssetExist(bundlePath))
                         return;
 
-                    BundleFileInstance bundleFile = assetsManager.LoadBundleFile(bundlePath);
+                    Stream bundleStream = APKAssetManager.GetAssetStream(bundlePath);
+                    BundleFileInstance bundleFile = assetsManager.LoadBundleFile(bundleStream, bundlePath);
                     instance = assetsManager.LoadAssetsFileFromBundle(bundleFile, "globalgamemanagers");
                 }
                 else
-                    instance = assetsManager.LoadAssetsFile(bundlePath, true);
+                {
+                    Stream bundleStream = APKAssetManager.GetAssetStream(bundlePath);
+                    instance = assetsManager.LoadAssetsFile(bundleStream, bundlePath, true);
+                }
+
                 if (instance == null)
                     return;
 
@@ -125,7 +130,7 @@ namespace MelonLoader.InternalUtils
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (MelonDebug.IsEnabled())
                     MelonLogger.Error(ex);
@@ -137,7 +142,8 @@ namespace MelonLoader.InternalUtils
 
         private static void ReadGameInfoFallback()
         {
-            try
+            // i don't think any android apps have app.info and i don't know any other way to get game info (unless i just parse the package name, but that's kinda dumb)
+            /*try
             {
                 string appInfoFilePath = Path.Combine(MelonEnvironment.UnityGameDataDirectory, "app.info");
                 if (!File.Exists(appInfoFilePath))
@@ -158,26 +164,16 @@ namespace MelonLoader.InternalUtils
             {
                 if (MelonDebug.IsEnabled())
                     MelonLogger.Error(ex);
-            }
+            }*/
         }
 
         private static UnityVersion ReadVersionFallback(string gameDataPath)
         {
-            string unityPlayerPath = MelonEnvironment.UnityPlayerPath;
-            if (!File.Exists(unityPlayerPath))
-                unityPlayerPath = MelonEnvironment.GameExecutablePath;
-
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                var unityVer = FileVersionInfo.GetVersionInfo(unityPlayerPath);
-                return new UnityVersion((ushort)unityVer.FileMajorPart, (ushort)unityVer.FileMinorPart, (ushort)unityVer.FileBuildPart);
-            }
-
             try
             {
                 var globalgamemanagersPath = Path.Combine(gameDataPath, "globalgamemanagers");
-                if (File.Exists(globalgamemanagersPath))
-                    return GetVersionFromGlobalGameManagers(File.ReadAllBytes(globalgamemanagersPath));
+                if (APKAssetManager.DoesAssetExist(globalgamemanagersPath))
+                    return GetVersionFromGlobalGameManagers(APKAssetManager.GetAssetBytes(globalgamemanagersPath));
             }
             catch (Exception ex)
             {
@@ -188,8 +184,8 @@ namespace MelonLoader.InternalUtils
             try
             {
                 var dataPath = Path.Combine(gameDataPath, "data.unity3d");
-                if (File.Exists(dataPath))
-                    return GetVersionFromDataUnity3D(File.OpenRead(dataPath));
+                if (APKAssetManager.DoesAssetExist(dataPath))
+                    return GetVersionFromDataUnity3D(APKAssetManager.GetAssetStream(dataPath));
             }
             catch (Exception ex)
             {
