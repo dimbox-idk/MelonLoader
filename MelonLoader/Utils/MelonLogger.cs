@@ -52,9 +52,9 @@ namespace MelonLoader
                     int fileCount = fileTbl.Length;
                     if (fileCount >= MaxLogs)
                     {
-                        List<(string, DateTime)> queue = new();
+                        List<LogItem> queue = new();
                         foreach (var file in fileTbl)
-                            queue.Add((file, File.GetLastWriteTime(file)));
+                            queue.Add(new(file, File.GetLastWriteTime(file)));
                         queue.Sort((x, y) =>
                         {
                             if (x.Item2 >= y.Item2)
@@ -379,5 +379,12 @@ namespace MelonLoader
         public static void LogError(string txt) => Error(txt);
         [Obsolete("LogError is obsolete. Please use Error instead.")]
         public static void LogError(string txt, params object[] args) => Error(txt, args);
+    }
+
+    // bypassing an issue where monomod and valuetuplebridge both define ValueTuple`2
+    internal record struct LogItem(string item1, DateTime item2)
+    {
+        public string Item1 = item1;
+        public DateTime Item2 = item2;
     }
 }

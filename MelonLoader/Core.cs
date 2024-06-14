@@ -93,6 +93,11 @@ namespace MelonLoader
                 MelonDebug.Msg("[MonoLibrary] Caught MissingMethodException, assuming not running under mono and continuing with init");
             }
 
+            MonoMod.Logs.DebugLog.OnLog += (string source, DateTime time, MonoMod.Logs.LogLevel level, string message) =>
+        {
+                MelonLogger.Msg($"[MonoMod] [{source}] [{level.ToString()}] {message}");
+            };
+
             HarmonyInstance = new HarmonyLib.Harmony(BuildInfo.Name);
             
 #if NET6_0_OR_GREATER
