@@ -1,3 +1,7 @@
 [submodule "External/JNISharp"]
 	path = External/JNISharp
 	url = https://github.com/LemonLoader/JNISharp.git
+[submodule "External/MonoMod"]
+	path = External/MonoMod
+	url = https://github.com/LemonLoader/MonoMod.git
+	branch = macos-m1

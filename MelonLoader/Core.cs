@@ -92,6 +92,10 @@ namespace MelonLoader
 
             Environment.SetEnvironmentVariable("IL2CPP_INTEROP_DATABASES_LOCATION", MelonEnvironment.Il2CppAssembliesDirectory);
 #endif
+            MonoMod.Logs.DebugLog.OnLog += (string source, DateTime time, MonoMod.Logs.LogLevel level, string message) =>
+            {
+                MelonLogger.Msg($"[MonoMod] [{source}] [{level.ToString()}] {message}");
+            };
 
             HarmonyInstance = new HarmonyLib.Harmony(BuildInfo.Name);
             
