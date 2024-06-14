@@ -217,6 +217,7 @@ namespace MelonLoader
                     33 => "13",
                     34 => "14",
                     35 => "15",
+                    _ => $"API Level {apiLevel}"
                 };
                 sb.Append(androidVersion);
 
