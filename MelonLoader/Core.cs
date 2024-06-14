@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using bHapticsLib;
 using System.Threading;
 using System.Text;
-
+using JNISharp.NativeInterface;
 
 #if NET35
 using MelonLoader.CompatibilityLayers;
@@ -41,6 +41,10 @@ namespace MelonLoader
 
             MelonLaunchOptions.Load();
             MelonLogger.Setup();
+
+            IntPtr ptr = BootstrapInterop.NativeGetJavaVM();
+            JNI.Initialize(ptr);
+            MelonLogger.Msg("Initialized JNI");
 
 #if NET6_0_OR_GREATER
             if (MelonLaunchOptions.Core.UserWantsDebugger && MelonEnvironment.IsDotnetRuntime)

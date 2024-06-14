@@ -1,0 +1,3 @@
+[submodule "External/JNISharp"]
+	path = External/JNISharp
+	url = https://github.com/LemonLoader/JNISharp.git
