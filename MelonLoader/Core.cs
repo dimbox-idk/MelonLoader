@@ -199,6 +199,99 @@ namespace MelonLoader
 
             MelonEnvironment.PrintEnvironment();
         }
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        internal static extern uint RtlGetVersion(out OsVersionInfo versionInformation); // return type should be the NtStatus enum
+        
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct OsVersionInfo
+        {
+            private readonly uint OsVersionInfoSize;
+
+            internal readonly uint MajorVersion;
+            internal readonly uint MinorVersion;
+
+            internal readonly uint BuildNumber;
+
+            private readonly uint PlatformId;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            internal readonly string CSDVersion;
+        }
+        
+        internal static string GetOSVersion()
+        {
+            if (MelonUtils.IsAndroid)
+            {
+                StringBuilder sb = new();
+                sb.Append("Android ");
+                int apiLevel = Environment.OSVersion.Version.Major;
+                // https://apilevels.com/
+                string androidVersion = apiLevel switch
+                {
+                    27 => "8.1",
+                    28 => "9",
+                    29 => "10",
+                    30 => "11",
+                    31 => "12",
+                    32 => "12L",
+                    33 => "13",
+                    34 => "14",
+                    35 => "15",
+                    _ => $"API Level {apiLevel}"
+                };
+                sb.Append(androidVersion);
+
+                return sb.ToString();
+            }
+
+            if (MelonUtils.IsUnix || MelonUtils.IsMac)
+                return Environment.OSVersion.VersionString;
+            
+            if (MelonUtils.IsUnderWineOrSteamProton())
+                return $"Wine {WineGetVersion()}";
+            RtlGetVersion(out OsVersionInfo versionInformation);
+            var minor = versionInformation.MinorVersion;
+            var build = versionInformation.BuildNumber;
+
+            string versionString = "";
+
+            switch (versionInformation.MajorVersion)
+            {
+                case 4:
+                    versionString = "Windows 95/98/Me/NT";
+                    break;
+                case 5:
+                    if (minor == 0)
+                        versionString = "Windows 2000";
+                    if (minor == 1)
+                        versionString = "Windows XP";
+                    if (minor == 2)
+                        versionString = "Windows 2003";
+                    break;
+                case 6:
+                    if (minor == 0)
+                        versionString = "Windows Vista";
+                    if (minor == 1)
+                        versionString = "Windows 7";
+                    if (minor == 2)
+                        versionString = "Windows 8";
+                    if (minor == 3)
+                        versionString = "Windows 8.1";
+                    break;
+                case 10:
+                    if (build >= 22000)
+                        versionString = "Windows 11";
+                    else
+                        versionString = "Windows 10";
+                    break;
+                default:
+                    versionString = "Unknown";
+                    break;
+            }
+
+            return $"{versionString}";
+        }
         
         internal static void Quit()
         {
