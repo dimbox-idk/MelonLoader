@@ -43,6 +43,7 @@ namespace MelonLoader
 
             IntPtr ptr = BootstrapInterop.NativeGetJavaVM();
             JNI.Initialize(ptr);
+            APKAssetManager.Initialize();
             MelonLogger.Msg("Initialized JNI");
 
 #if NET35
