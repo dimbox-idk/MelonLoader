@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using bHapticsLib;
 using System.Threading;
 using System.Text;
-
+using JNISharp.NativeInterface;
 
 #if NET35
 using MelonLoader.CompatibilityLayers;
@@ -40,6 +40,10 @@ namespace MelonLoader
 
             MelonLaunchOptions.Load();
             MelonLogger.Setup();
+
+            IntPtr ptr = BootstrapInterop.NativeGetJavaVM();
+            JNI.Initialize(ptr);
+            MelonLogger.Msg("Initialized JNI");
 
 #if NET35
             // Disabled for now because of issues
@@ -78,7 +82,7 @@ namespace MelonLoader
                 MelonDebug.Msg("[MonoLibrary] Caught MissingMethodException, assuming not running under mono and continuing with init");
             }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
             if (MelonLaunchOptions.Core.UserWantsDebugger && MelonEnvironment.IsDotnetRuntime)
             {
                 MelonLogger.Msg("[Init] User requested debugger, attempting to launch now...");

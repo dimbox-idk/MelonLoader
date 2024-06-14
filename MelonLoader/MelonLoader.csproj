@@ -77,4 +77,7 @@
 	    <Version>3.1.512801</Version>
 	  </PackageReference>
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\External\JNISharp\JNISharp\JNISharp.csproj" />
+	</ItemGroup>
 </Project>
