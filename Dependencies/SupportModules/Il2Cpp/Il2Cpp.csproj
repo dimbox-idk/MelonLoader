@@ -26,19 +26,16 @@
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="MonoMod.Core">
-		  <HintPath>..\..\..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.Core.dll</HintPath>
-		</Reference>
-		<Reference Include="MonoMod.Iced">
-		  <HintPath>..\..\..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.Iced.dll</HintPath>
+		  <HintPath>..\..\..\External\MonoMod\artifacts\bin\MonoMod.Core\debug_net8.0\MonoMod.Core.dll</HintPath>
 		</Reference>
 		<Reference Include="MonoMod.ILHelpers">
-		  <HintPath>..\..\..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.ILHelpers.dll</HintPath>
+		  <HintPath>..\..\..\External\MonoMod\artifacts\bin\MonoMod.ILHelpers\debug_net8.0\MonoMod.ILHelpers.dll</HintPath>
 		</Reference>
 		<Reference Include="MonoMod.RuntimeDetour">
 		  <HintPath>..\..\..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.RuntimeDetour.dll</HintPath>
 		</Reference>
 		<Reference Include="MonoMod.Utils">
-		  <HintPath>..\..\..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.Utils.dll</HintPath>
+		  <HintPath>..\..\..\External\MonoMod\artifacts\bin\MonoMod.Utils\debug_net8.0\MonoMod.Utils.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.CoreModule">
 			<HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
