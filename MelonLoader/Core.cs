@@ -132,7 +132,7 @@ namespace MelonLoader
         internal static int PreStart()
         {
             MelonEvents.OnApplicationEarlyStart.Invoke();
-            return MelonStartScreen.LoadAndRun(PreSetup);
+            return Il2CppGameSetup();
         }
 
         private static int PreSetup()
