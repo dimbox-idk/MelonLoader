@@ -30,7 +30,12 @@ namespace MelonLoader.Il2CppAssemblyGenerator
         {
             Logger = LoggerInstance;
 
-            webClient = new();
+            HttpClientHandler handler = new()
+            {
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+            };
+            webClient = new(handler);
             webClient.DefaultRequestHeaders.Add("User-Agent", $"{BuildInfo.Name} v{BuildInfo.Version}");
 
             AssemblyGenerationNeeded = MelonLaunchOptions.Il2CppAssemblyGenerator.ForceRegeneration;
