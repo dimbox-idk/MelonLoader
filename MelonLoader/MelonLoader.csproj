@@ -37,7 +37,7 @@
 		<PackageReference Include="Samboy063.Tomlet" Version="5.3.1" />
 		<PackageReference Include="bHapticsLib" Version="1.0.6" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8'">
 		<PackageReference Include="AsmResolver.DotNet" Version="5.5.1" />
 		<PackageReference Include="Microsoft.Diagnostics.Runtime" Version="3.1.512801" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
@@ -50,56 +50,36 @@
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\classdata.tpk" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'net8'">
-	  <PackageReference Include="AsmResolver">
-	    <Version>5.5.1</Version>
-	  </PackageReference>
-	  <PackageReference Include="AsmResolver.DotNet">
-	    <Version>5.5.1</Version>
-	  </PackageReference>
-	  <PackageReference Include="AsmResolver.PE">
-	    <Version>5.5.1</Version>
-	  </PackageReference>
-	  <PackageReference Include="Microsoft.Diagnostics.Runtime">
-	    <Version>3.1.512801</Version>
-	  </PackageReference>
-	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\External\HarmonyX\Harmony\Harmony.csproj" />
 	  <ProjectReference Include="..\External\JNISharp\JNISharp\JNISharp.csproj" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8'">
 	  <Reference Include="MonoMod.Core">
-	    <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.Core.dll</HintPath>
-	  </Reference>
-	  <Reference Include="MonoMod.Iced">
-	    <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.Iced.dll</HintPath>
+	    <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.Core\debug_net8.0\MonoMod.Core.dll</HintPath>
 	  </Reference>
 	  <Reference Include="MonoMod.ILHelpers">
-	    <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.ILHelpers.dll</HintPath>
+	    <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.ILHelpers\debug_net8.0\MonoMod.ILHelpers.dll</HintPath>
 	  </Reference>
 	  <Reference Include="MonoMod.RuntimeDetour">
 	    <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.RuntimeDetour.dll</HintPath>
 	  </Reference>
 	  <Reference Include="MonoMod.Utils">
-	    <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.Utils.dll</HintPath>
+	    <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.Utils\debug_net8.0\MonoMod.Utils.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net35'">
 		<Reference Include="MonoMod.Core">
-		  <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net35\MonoMod.Core.dll</HintPath>
-		</Reference>
-		<Reference Include="MonoMod.Iced">
-		  <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net35\MonoMod.Iced.dll</HintPath>
+		  <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.Core\debug_net35\MonoMod.Core.dll</HintPath>
 		</Reference>
 		<Reference Include="MonoMod.ILHelpers">
-		  <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net35\MonoMod.ILHelpers.dll</HintPath>
+		  <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.ILHelpers\debug_net35\MonoMod.ILHelpers.dll</HintPath>
 		</Reference>
 		<Reference Include="MonoMod.RuntimeDetour">
 		  <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net35\MonoMod.RuntimeDetour.dll</HintPath>
 		</Reference>
 		<Reference Include="MonoMod.Utils">
-		  <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.RuntimeDetour\debug_net35\MonoMod.Utils.dll</HintPath>
+		  <HintPath>..\External\MonoMod\artifacts\bin\MonoMod.Utils\debug_net35\MonoMod.Utils.dll</HintPath>
 		</Reference>
 	  </ItemGroup>
 </Project>
