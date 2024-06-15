@@ -29,8 +29,8 @@ namespace MelonLoader
     
         internal static void Setup(AppDomain domain)
         {
-            // SHA256.Create() does not work on linux-bionic
-            HashCode = string.Empty;
+            using (var sha = SHA256.Create())
+                HashCode = string.Concat(sha.ComputeHash(File.ReadAllBytes(Assembly.GetExecutingAssembly().Location)).Select(b => b.ToString("X2")).ToArray());
 
             Core.WelcomeMessage();
 

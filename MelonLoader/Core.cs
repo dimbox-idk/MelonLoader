@@ -169,6 +169,7 @@ namespace MelonLoader
             MelonLogger.MsgDirect("------------------------------");
             MelonLogger.MsgDirect(GetVersionString());
             MelonLogger.MsgDirect($"OS: {GetOSVersion()}");
+            MelonLogger.MsgDirect($"Hash Code: {MelonUtils.HashCode}");
             MelonLogger.MsgDirect("------------------------------");
             var typeString = MelonUtils.IsGameIl2Cpp() ? "Il2cpp" : MelonUtils.IsOldMono() ? "Mono" : "MonoBleedingEdge";
             MelonLogger.MsgDirect($"Game Type: {typeString}");
