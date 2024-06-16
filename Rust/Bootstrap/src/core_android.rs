@@ -26,7 +26,10 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _: *mut c_void) -> jint {
 
     #[cfg(debug_assertions)]
     std::thread::spawn(|| unsafe {
-        crate::dotnet_trace::main();
+        crate::dotnet_trace::redirect_stderr();
+    });
+    std::thread::spawn(|| unsafe {
+        crate::dotnet_trace::redirect_stdout();
     });
 
     // TODO: copy dotnet runtime into /data/data
