@@ -4,7 +4,7 @@ use jni::{
     JNIEnv, JavaVM,
 };
 use lazy_static::lazy_static;
-use std::{os::raw::c_void, panic::catch_unwind, sync::Mutex};
+use std::{os::raw::c_void, panic::catch_unwind, sync::Mutex, ffi::{CString, c_char}};
 
 const INVALID_JNI_VERSION: jint = 0;
 

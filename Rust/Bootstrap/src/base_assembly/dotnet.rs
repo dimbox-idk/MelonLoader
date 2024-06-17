@@ -1,7 +1,7 @@
 use lazy_static::lazy_static;
-use libc::{pthread_t, size_t};
+use libc::size_t;
 use netcorehost::{pdcstr, hostfxr::Hostfxr};
-use unity_rs::{il2cpp::types::Il2CppThread, runtime::{self, Runtime}};
+use unity_rs::{il2cpp::types::Il2CppThread, runtime::Runtime};
 use std::{
     ffi::{c_char, c_void},
     ptr::{addr_of, addr_of_mut, null_mut},
@@ -168,6 +168,7 @@ fn apply_mono_patches() -> Result<(), DynErr> {
 }
 
 unsafe extern "C" fn mono_unhandled_exception(exc: *mut unity_rs::mono::types::MonoObject, user_data: *mut c_void) {
+    let _ = user_data;
     if (exc as usize) == 0 {
         return;
     }
@@ -178,7 +179,7 @@ unsafe extern "C" fn mono_unhandled_exception(exc: *mut unity_rs::mono::types::M
 }
 
 fn mono_check_thread(tid: u64) -> bool {
-    debug!("[Dotnet] Checking thread {:#x}", tid);
+    debug!("[Dotnet] Checking thread {:#x}", tid).unwrap();
 
     let runtime = crate::runtime!().unwrap();
 
@@ -190,7 +191,7 @@ fn mono_check_thread(tid: u64) -> bool {
 
     for i in 0..size {
         let thread_id = unsafe { *(*threads_slice[i]).internal_thread }.tid;
-        debug!("[Dotnet] Attached IL2CPP thread {:#x}", thread_id);
+        debug!("[Dotnet] Attached IL2CPP thread {:#x}", thread_id).unwrap();
         if thread_id == tid {
             return false;
         }

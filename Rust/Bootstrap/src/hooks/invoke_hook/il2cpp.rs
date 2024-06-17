@@ -1,9 +1,9 @@
 use std::{ffi::c_void, sync::RwLock, ptr::null_mut};
 
 use lazy_static::lazy_static;
-use unity_rs::{common::method::UnityMethod, il2cpp::types::{Il2CppMethod, Il2CppObject}, runtime::Runtime};
+use unity_rs::{common::method::UnityMethod, il2cpp::types::{Il2CppMethod, Il2CppObject}};
 
-use crate::{base_assembly, constants::InvokeFnIl2Cpp, debug, errors::DynErr, hooks::NativeHook, internal_failure, melonenv::paths, runtime};
+use crate::{base_assembly, constants::InvokeFnIl2Cpp, debug, errors::DynErr, hooks::NativeHook, internal_failure, runtime};
 
 lazy_static! {
     pub static ref INVOKE_HOOK: RwLock<NativeHook<InvokeFnIl2Cpp>> =

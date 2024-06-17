@@ -1,4 +1,4 @@
-use crate::{console, errors::DynErr, hooks, internal_failure, base_assembly};
+use crate::{console, errors::DynErr, hooks, internal_failure};
 
 #[no_mangle]
 fn startup() {
