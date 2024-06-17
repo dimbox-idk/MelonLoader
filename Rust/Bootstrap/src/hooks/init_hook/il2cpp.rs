@@ -25,6 +25,8 @@ fn detour_inner(name: *const c_char) -> Result<*mut Il2CppDomain, DynErr> {
     let trampoline = INIT_HOOK.try_read()?;
     let domain = trampoline(name);
 
+    crate::base_assembly::init(crate::runtime!()?)?;
+
     debug!("Detaching hook from il2cpp_init")?;
     trampoline.unhook()?;
     

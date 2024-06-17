@@ -1,9 +1,9 @@
 use std::{ffi::c_void, sync::RwLock, ptr::null_mut};
 
 use lazy_static::lazy_static;
-use unity_rs::{il2cpp::types::{Il2CppMethod, Il2CppObject}, common::method::UnityMethod};
+use unity_rs::{common::method::UnityMethod, il2cpp::types::{Il2CppMethod, Il2CppObject}, runtime::Runtime};
 
-use crate::{constants::InvokeFnIl2Cpp, errors::DynErr, hooks::NativeHook, internal_failure, runtime, debug, base_assembly};
+use crate::{base_assembly, constants::InvokeFnIl2Cpp, debug, errors::DynErr, hooks::NativeHook, internal_failure, melonenv::paths, runtime};
 
 lazy_static! {
     pub static ref INVOKE_HOOK: RwLock<NativeHook<InvokeFnIl2Cpp>> =
@@ -38,6 +38,14 @@ fn detour_inner(
     if name.contains("Internal_ActiveSceneChanged") {
         debug!("Detaching hook from il2cpp_runtime_invoke")?;
         trampoline.unhook()?;
+
+        debug!("Resetting mono thread")?;
+
+        let lib = crate::mono_lib!()?;
+        let thread_suspend_reload = lib.exports.mono_melonloader_thread_suspend_reload.as_ref().unwrap();
+        thread_suspend_reload();
+        
+        debug!("Mono thread reset")?;
 
         base_assembly::pre_start()?;
         base_assembly::start()?;

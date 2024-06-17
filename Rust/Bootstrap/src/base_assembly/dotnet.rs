@@ -1,5 +1,7 @@
 use lazy_static::lazy_static;
+use libc::{pthread_t, size_t};
 use netcorehost::{pdcstr, hostfxr::Hostfxr};
+use unity_rs::{il2cpp::types::Il2CppThread, runtime::{self, Runtime}};
 use std::{
     ffi::{c_char, c_void},
     ptr::{addr_of, addr_of_mut, null_mut},
@@ -83,6 +85,8 @@ pub fn init() -> Result<(), DynErr> {
         get_java_vm: core_android::get_raw_java_vm,
     };
 
+    apply_mono_patches()?;
+
     debug!("[Dotnet] Invoking LoadStage1")?;
     //MelonLoader.NativeHost will fill in the HostImports struct with pointers to functions
     init(addr_of_mut!(imports));
@@ -133,4 +137,64 @@ pub fn start() -> Result<(), DynErr> {
     (imports.start)();
 
     Ok(())
+}
+
+fn apply_mono_patches() -> Result<(), DynErr> {
+    debug!("[Dotnet] Applying Mono runtime patches")?;
+
+    let lib = crate::mono_lib!()?;
+    
+    let set_level_string = unsafe { std::mem::transmute::<*mut c_void, fn(*const c_char)>(lib.get_export_ptr("mono_trace_set_level_string")?) };
+    let warning = std::ffi::CString::new("warning").unwrap();
+    set_level_string(warning.as_ptr());
+    let set_mask_string = unsafe { std::mem::transmute::<*mut c_void, fn(*const c_char)>(lib.get_export_ptr("mono_trace_set_mask_string")?) };
+    let all = std::ffi::CString::new("all").unwrap();
+    set_mask_string(all.as_ptr());
+
+    debug!("[Dotnet] Enabled Mono logging")?;
+
+    type MonoUnhandledExceptionFunc = Option<unsafe extern "C" fn(exc: *mut unity_rs::mono::types::MonoObject, user_data: *mut c_void)>;
+    let install_unhandled_exception_hook = unsafe { std::mem::transmute::<*mut c_void, fn(MonoUnhandledExceptionFunc, *mut c_void)>(lib.get_export_ptr("mono_install_unhandled_exception_hook")?) };
+    install_unhandled_exception_hook(Some(mono_unhandled_exception), null_mut());
+
+    debug!("[Dotnet] Installed unhandled exception hook")?;
+
+    let thread_suspend_reload = lib.exports.mono_melonloader_set_thread_checker.as_ref().unwrap();
+    thread_suspend_reload(mono_check_thread);
+
+    debug!("[Dotnet] Installed thread checker")?;
+
+    Ok(())
+}
+
+unsafe extern "C" fn mono_unhandled_exception(exc: *mut unity_rs::mono::types::MonoObject, user_data: *mut c_void) {
+    if (exc as usize) == 0 {
+        return;
+    }
+
+    let lib = crate::mono_lib!().unwrap();
+    let print_unhandled_exception = std::mem::transmute::<*mut c_void, fn(*mut unity_rs::mono::types::MonoObject)>(lib.get_export_ptr("mono_print_unhandled_exception").unwrap());
+    print_unhandled_exception(exc);
+}
+
+fn mono_check_thread(tid: u64) -> bool {
+    debug!("[Dotnet] Checking thread {:#x}", tid);
+
+    let runtime = crate::runtime!().unwrap();
+
+    
+    let mut size: usize = 0;
+    let get_all_attached_threads = unsafe { std::mem::transmute::<*mut c_void, fn(size: *mut size_t) -> *const *const Il2CppThread>(runtime.get_export_ptr("il2cpp_thread_get_all_attached_threads").unwrap()) };
+    let threads = get_all_attached_threads(addr_of_mut!(size));
+    let threads_slice = unsafe { std::slice::from_raw_parts(threads, size) };
+
+    for i in 0..size {
+        let thread_id = unsafe { *(*threads_slice[i]).internal_thread }.tid;
+        debug!("[Dotnet] Attached IL2CPP thread {:#x}", thread_id);
+        if thread_id == tid {
+            return false;
+        }
+    }
+
+    true
 }

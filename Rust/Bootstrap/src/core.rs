@@ -10,8 +10,6 @@ fn startup() {
 fn init() -> Result<(), DynErr> {
     console::init()?;
 
-    base_assembly::init(crate::runtime!()?)?;
-
     hooks::init_hook::hook()?;
 
     console::null_handles()?;

@@ -1764,7 +1764,7 @@ dependencies = [
 [[package]]
 name = "unity-rs"
 version = "0.1.0"
-source = "git+https://github.com/TrevTV/Ferrex/#58aec0b5099d81a9ab81407988c6427b10f616f8"
+source = "git+https://github.com/TrevTV/Ferrex/?branch=mono-thread-checking#2e96e32dc3f2ed8b57938d47eb94223172d6b127"
 dependencies = [
  "libc",
  "libloading",
