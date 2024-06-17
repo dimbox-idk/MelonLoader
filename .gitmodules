@@ -11,3 +11,6 @@
 [submodule "External/Cpp2IL"]
 	path = External/Cpp2IL
 	url = https://github.com/SamboyCoding/Cpp2IL.git
+[submodule "External/Il2CppInterop"]
+	path = External/Il2CppInterop
+	url = https://github.com/LemonLoader/Il2CppInterop.git
