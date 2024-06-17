@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using JNISharp.NativeInterface;
 using MelonLoader.Il2CppAssemblyGenerator.Packages;
 using MelonLoader.Modules;
 using MelonLoader.Utils;
@@ -39,17 +41,7 @@ namespace MelonLoader.Il2CppAssemblyGenerator
             webClient.DefaultRequestHeaders.Add("User-Agent", $"{BuildInfo.Name} v{BuildInfo.Version}");
 
             AssemblyGenerationNeeded = MelonLaunchOptions.Il2CppAssemblyGenerator.ForceRegeneration;
-
-            string gameAssemblyName = "GameAssembly";
-            
-            if (MelonUtils.IsUnix)
-                gameAssemblyName += ".so"; 
-            if (MelonUtils.IsWindows)
-                gameAssemblyName += ".dll";
-            if (MelonUtils.IsMac)
-                gameAssemblyName += ".dylib";
-
-                GameAssemblyPath = Path.Combine(MelonEnvironment.GameRootDirectory, gameAssemblyName);
+            GameAssemblyPath = GetLibIl2CppPath();
             ManagedPath = MelonEnvironment.MelonManagedDirectory;
 
             BasePath = Path.GetDirectoryName(Assembly.Location);
@@ -62,7 +54,7 @@ namespace MelonLoader.Il2CppAssemblyGenerator
             if (!MelonLaunchOptions.Il2CppAssemblyGenerator.OfflineMode)
                 RemoteAPI.Contact();
 
-            dumper = new Cpp2IL();
+            dumper = new Packages.Cpp2IL();
             il2cppinterop = new Packages.Il2CppInterop();
             unitydependencies = new UnityDependencies();
             deobfuscationMap = new DeobfuscationMap();
@@ -125,6 +117,35 @@ namespace MelonLoader.Il2CppAssemblyGenerator
             Config.Save();
 
             return 0;
+        }
+
+        private string GetLibIl2CppPath()
+        {
+            JClass unityClass = JNI.FindClass("com/unity3d/player/UnityPlayer");
+            JFieldID activityFieldId = JNI.GetStaticFieldID(unityClass, "currentActivity", "Landroid/app/Activity;");
+            JObject currentActivityObj = JNI.GetStaticObjectField<JObject>(unityClass, activityFieldId);
+            JObject applicationInfoObj = JNI.CallObjectMethod<JObject>(currentActivityObj, JNI.GetMethodID(JNI.GetObjectClass(currentActivityObj), "getApplicationInfo", "()Landroid/content/pm/ApplicationInfo;"));
+            JFieldID filesFieldId = JNI.GetFieldID(JNI.GetObjectClass(applicationInfoObj), "nativeLibraryDir", "Ljava/lang/String;");
+            JString pathJString = JNI.GetObjectField<JString>(applicationInfoObj, filesFieldId);
+
+            if (pathJString == null || !pathJString.Valid())
+            {
+                MelonLogger.Msg("Unable to get libil2cpp path.");
+                if (JNI.ExceptionCheck())
+                {
+                    var ex = JNI.ExceptionOccurred();
+                    JNI.ExceptionClear();
+                    MelonLogger.Msg(ex.GetMessage());
+                }
+
+                return "";
+            }
+
+            string nativePath = JNI.GetJStringString(pathJString);
+            string[] directoryLibs = Directory.GetFiles(nativePath, "*.so");
+
+            string libil2Path = directoryLibs.FirstOrDefault(s => s.EndsWith("libil2cpp.so"));
+            return libil2Path;
         }
 
         private static void OldFiles_Cleanup()

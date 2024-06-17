@@ -8,3 +8,6 @@
 [submodule "External/HarmonyX"]
 	path = External/HarmonyX
 	url = https://github.com/LemonLoader/HarmonyX.git
+[submodule "External/Cpp2IL"]
+	path = External/Cpp2IL
+	url = https://github.com/SamboyCoding/Cpp2IL.git

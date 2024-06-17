@@ -1,6 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Runtime;
+using AsmResolver.Patching;
+using AssetRipper.Primitives;
+using Cpp2IL.Core;
+using Cpp2IL.Core.Api;
+using Cpp2IL.Core.Extensions;
+using Cpp2IL.Core.Logging;
+using JNISharp.NativeInterface;
+using LibCpp2IL.Logging;
+using LibCpp2IL.Wasm;
+using MelonLoader.InternalUtils;
+using MelonLoader.Utils;
 using Semver;
 
 namespace MelonLoader.Il2CppAssemblyGenerator.Packages
@@ -12,29 +26,10 @@ namespace MelonLoader.Il2CppAssemblyGenerator.Packages
         internal Cpp2IL()
         {
             Version = MelonLaunchOptions.Il2CppAssemblyGenerator.ForceVersion_Dumper;
-#if !DEBUG
-            if (string.IsNullOrEmpty(Version) || Version.Equals("0.0.0.0"))
-                Version = RemoteAPI.Info.ForceDumperVersion;
-#endif
-            if (string.IsNullOrEmpty(Version) || Version.Equals("0.0.0.0"))
-                Version = "2022.1.0-pre-release.14";
 
             Name = nameof(Cpp2IL);
             Destination = Path.Combine(Core.BasePath, Name);
             OutputFolder = Path.Combine(Destination, "cpp2il_out");
-
-            URL = $"https://github.com/SamboyCoding/{Name}/releases/download/{Version}/{Name}-{Version}-{ReleaseName}.zip";
-
-            ExeFilePath = Path.Combine(Destination, $"{Name}.exe");
-            
-            FilePath = Path.Combine(Core.BasePath, $"{Name}_{Version}.zip");
-
-            if (MelonUtils.IsWindows) 
-                return;
-            
-            URL = URL.Replace(".zip", "");
-            ExeFilePath = ExeFilePath.Replace(".exe", "");
-            FilePath = FilePath.Replace(".zip", "");
         }
 
         internal override bool ShouldSetup() 
@@ -48,51 +43,102 @@ namespace MelonLoader.Il2CppAssemblyGenerator.Packages
 
         internal override bool Execute()
         {
-            if (SemVersion.Parse(Version) <= SemVersion.Parse("2022.0.999"))
-                return ExecuteOld();
-            return ExecuteNew();
+            // TODO: this could technically be done via download, but its a much bigger pain to do it that way
+
+            Logger.InfoLog += (l, s) => Core.Logger.Msg($"[{s}] {l.TrimEnd('\n')}");
+            Logger.WarningLog += (l, s) => Core.Logger.Warning($"[{s}] {l.TrimEnd('\n')}");
+            Logger.ErrorLog += (l, s) => Core.Logger.Error($"[{s}] {l.TrimEnd('\n')}");
+            Logger.VerboseLog += (l, s) => Core.Logger.Msg($"[{s}] {l.TrimEnd('\n')}");
+
+            byte[] mdData = APKAssetManager.GetAssetBytes("bin/Data/Managed/Metadata/global-metadata.dat");
+            string mdPath = Path.Combine(Core.BasePath, "global-metadata.dat");
+            File.WriteAllBytes(mdPath, mdData);
+
+            Cpp2IlApi.Init();
+            Cpp2IlApi.ConfigureLib(false);
+            var result = new Cpp2IlRuntimeArgs()
+            {
+                PathToAssembly = Core.GameAssemblyPath,
+                PathToMetadata = mdPath,
+                UnityVersion = UnityVersion.Parse(UnityInformationHandler.EngineVersion.ToString()), // they use different versions of the same library but under different names, thanks ds5678
+                Valid = true,
+                OutputRootDirectory = OutputFolder,
+                OutputFormat = OutputFormatRegistry.GetFormat("dummydll"),
+                ProcessingLayersToRun = [ProcessingLayerRegistry.GetById("attributeinjector")],
+            };
+
+            return RunCpp2IL(result);
         }
 
-        private bool ExecuteNew()
+        // mostly copied from https://github.com/SamboyCoding/Cpp2IL/blob/development/Cpp2IL/Program.cs
+        private bool RunCpp2IL(Cpp2IlRuntimeArgs runtimeArgs)
         {
-            if (Execute(new string[] {
-                MelonDebug.IsEnabled() ? "--verbose" : string.Empty,
-                "--game-path",
-                "\"" + Path.GetDirectoryName(Core.GameAssemblyPath) + "\"",
-                "--exe-name",
-                "\"" + Process.GetCurrentProcess().ProcessName + "\"",
-                "--use-processor",
-                "attributeinjector",
-                "--output-as",
-                "dummydll"
+            var executionStart = DateTime.Now;
 
-            }, false, new Dictionary<string, string>() {
-                {"NO_COLOR", "1"}
-            }))
-                return true;
+            runtimeArgs.OutputFormat?.OnOutputFormatSelected();
 
-            return false;
+            WasmFile.RemappedDynCallFunctions = null;
+
+            Cpp2IlApi.InitializeLibCpp2Il(runtimeArgs.PathToAssembly, runtimeArgs.PathToMetadata, runtimeArgs.UnityVersion);
+
+            foreach (var (key, value) in runtimeArgs.ProcessingLayerConfigurationOptions)
+                Cpp2IlApi.CurrentAppContext.PutExtraData(key, value);
+
+            //Pre-process processing layers, allowing them to stop others from running
+            Core.Logger.Msg("Pre-processing processing layers...");
+            var layers = runtimeArgs.ProcessingLayersToRun.Clone();
+            RunProcessingLayers(runtimeArgs, processingLayer => processingLayer.PreProcess(Cpp2IlApi.CurrentAppContext, layers));
+            runtimeArgs.ProcessingLayersToRun = layers;
+
+            //Run processing layers
+            Core.Logger.Msg("Invoking processing layers...");
+            RunProcessingLayers(runtimeArgs, processingLayer => processingLayer.Process(Cpp2IlApi.CurrentAppContext));
+
+            var outputStart = DateTime.Now;
+
+            if (runtimeArgs.OutputFormat != null)
+            {
+                Core.Logger.Msg($"Outputting as {runtimeArgs.OutputFormat.OutputFormatName} to {runtimeArgs.OutputRootDirectory}...");
+                runtimeArgs.OutputFormat.DoOutput(Cpp2IlApi.CurrentAppContext, runtimeArgs.OutputRootDirectory);
+                Core.Logger.Msg($"Finished outputting in {(DateTime.Now - outputStart).TotalMilliseconds}ms");
+            }
+            else
+            {
+                Core.Logger.Warning("No output format requested, so not outputting anything. The il2cpp game loaded properly though! (Hint: You probably want to specify an output format, try --output-as)");
+            }
+
+            Cpp2IlPluginManager.CallOnFinish();
+
+            File.Delete(runtimeArgs.PathToMetadata); // because we extracted it from the apk's assets folder; only purpose was this
+
+            Core.Logger.Msg($"Done. Total execution time: {(DateTime.Now - executionStart).TotalMilliseconds}ms");
+            return true;
         }
 
-        private bool ExecuteOld()
+        private static void RunProcessingLayers(Cpp2IlRuntimeArgs runtimeArgs, Action<Cpp2IlProcessingLayer> run)
         {
-            if (Execute(new string[] {
-                MelonDebug.IsEnabled() ? "--verbose" : string.Empty,
-                "--game-path",
-                "\"" + Path.GetDirectoryName(Core.GameAssemblyPath) + "\"",
-                "--exe-name",
-                "\"" + Process.GetCurrentProcess().ProcessName + "\"",
+            foreach (var processingLayer in runtimeArgs.ProcessingLayersToRun)
+            {
+                var processorStart = DateTime.Now;
 
-                "--skip-analysis",
-                "--skip-metadata-txts",
-                "--disable-registration-prompts"
+                Core.Logger.Msg($"    {processingLayer.Name}...");
 
-            }, false, new Dictionary<string, string>() {
-                {"NO_COLOR", "1"}
-            }))
-                return true;
+#if !DEBUG
+                try
+                {
+#endif
+                run(processingLayer);
+#if !DEBUG
+                }
+                catch (Exception e)
+                {
+                    Logger.ErrorNewline($"Processing layer {processingLayer.Id} threw an exception: {e}");
+                    Environment.Exit(1);
+                }
+#endif
 
-            return false;
+                Core.Logger.Msg($"    {processingLayer.Name} finished in {(DateTime.Now - processorStart).TotalMilliseconds}ms");
+            }
         }
     }
 }
