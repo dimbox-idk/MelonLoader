@@ -1,16 +1,24 @@
 use std::{error::Error, collections::HashMap, io, path::Path};
 
-use unity_rs::runtime::FerrexRuntime;
+use unity_rs::{runtime::FerrexRuntime, mono::Mono};
 
 use crate::{errors::DynErr, melonenv::paths};
 
 #[allow(dead_code)]
 pub static mut RUNTIME: Option<FerrexRuntime> = None;
+pub static mut MONO_LIB: Option<Mono> = None;
 
 #[macro_export]
 macro_rules! runtime {
     () => {
         $crate::utils::runtime::get_runtime()
+    };
+}
+
+#[macro_export]
+macro_rules! mono_lib {
+    () => {
+        $crate::utils::runtime::get_mono_library()
     };
 }
 
@@ -21,6 +29,19 @@ pub fn get_runtime() -> Result<&'static FerrexRuntime, DynErr> {
         }
 
         Ok(RUNTIME.as_ref().ok_or("Failed to get runtime")?)
+    }
+}
+
+// should be android only but im lazy, it doesnt matter that much anyway
+pub fn get_mono_library() -> Result<&'static Mono, DynErr> {
+    unsafe {
+        if MONO_LIB.is_none() {
+            // mono is statically linked for linux-bionic's coreclr
+            let dotnet_path = paths::get_dotnet_path()?.join("shared/Microsoft.NETCore.App/8.0.6/libcoreclr.so");
+            MONO_LIB = Some(unity_rs::mono::Mono::new(dotnet_path)?)
+        }
+
+        Ok(MONO_LIB.as_ref().ok_or("Failed to get mono library")?)
     }
 }
 

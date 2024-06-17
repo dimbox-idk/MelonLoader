@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-unity-rs = { git = "https://github.com/TrevTV/Ferrex/" }
+unity-rs = { git = "https://github.com/TrevTV/Ferrex/", branch = "mono-thread-checking" }
 ctor = "0.2.8"
 chrono = "0.4.38"
 colored = "2.1.0"
