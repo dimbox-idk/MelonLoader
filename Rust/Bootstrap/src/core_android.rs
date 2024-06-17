@@ -44,3 +44,11 @@ pub unsafe fn get_raw_java_vm() -> *mut *const c_void {
     let vm = mutex.as_ref().expect("JavaVM not initialized");
     vm.get_java_vm_pointer() as *mut *const c_void
 }
+
+#[no_mangle]
+pub extern "C" fn melonloader_print_string(input: *const c_char) {
+    unsafe {
+        let tag = CString::new("MelonLoader").unwrap();
+        android_liblog_sys::__android_log_write(4, tag.as_ptr(), input);
+    }
+}

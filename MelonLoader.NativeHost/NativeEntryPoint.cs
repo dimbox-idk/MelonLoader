@@ -12,7 +12,7 @@ namespace MelonLoader.NativeHost
         [UnmanagedCallersOnly]
         unsafe static void LoadStage1(HostImports* imports)
         {
-            Console.WriteLine("[NewEntryPoint] Passing ptr to LoadAssemblyAndGetFuncPtr back to host...");
+            WriteLine("[NewEntryPoint] Passing ptr to LoadAssemblyAndGetFuncPtr back to host...");
             imports->LoadAssemblyAndGetPtr = &StereoHostingApi.LoadAssemblyAndGetFuncPtr;
         }
 
@@ -20,7 +20,7 @@ namespace MelonLoader.NativeHost
         [UnmanagedCallersOnly]
         unsafe static void LoadStage2(HostImports* imports, HostExports* exports)
         {
-            Console.WriteLine("[NewEntryPoint] Configuring imports...");
+            WriteLine("[NewEntryPoint] Configuring imports...");
 
             imports->Initialize = &Initialize;
             imports->PreStart = &PreStart;
@@ -33,7 +33,7 @@ namespace MelonLoader.NativeHost
         static void Initialize()
         {
             bool isDefaultAlc = AssemblyLoadContext.Default == AssemblyLoadContext.GetLoadContext(Assembly.GetExecutingAssembly());
-            Console.WriteLine($"[NewEntryPoint] Initializing. In default load context: {isDefaultAlc}");
+            WriteLine($"[NewEntryPoint] Initializing. In default load context: {isDefaultAlc}");
 
             AssemblyLoadContext.Default.Resolving += OnResolveAssembly;
 
@@ -43,7 +43,7 @@ namespace MelonLoader.NativeHost
                 MelonLoaderInvoker.Initialize();
             } catch(Exception ex)
             {
-                Console.WriteLine("[NewEntryPoint] Caught exception invoking Initialize! " + ex);
+                WriteLine("[NewEntryPoint] Caught exception invoking Initialize! " + ex);
                 Thread.Sleep(5000);
                 Environment.Exit(1);
             }
@@ -59,7 +59,7 @@ namespace MelonLoader.NativeHost
                 MelonLoaderInvoker.PreStart();
             } catch(Exception ex)
             {
-                Console.WriteLine("[NewEntryPoint] Caught exception invoking PreStart! " + ex);
+                WriteLine("[NewEntryPoint] Caught exception invoking PreStart! " + ex);
                 Thread.Sleep(5000);
                 Environment.Exit(1);
             }
@@ -76,13 +76,11 @@ namespace MelonLoader.NativeHost
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[NewEntryPoint] Caught exception invoking Start! " + ex);
+                WriteLine("[NewEntryPoint] Caught exception invoking Start! " + ex);
                 Thread.Sleep(5000);
                 Environment.Exit(1);
             }
         }
-
-        
 
         private static Assembly? OnResolveAssembly(AssemblyLoadContext alc, AssemblyName name)
         {
@@ -94,5 +92,8 @@ namespace MelonLoader.NativeHost
 
             return null;
         }
+
+        [DllImport("libBootstrap.so", EntryPoint = "melonloader_print_string")]
+        internal static extern void WriteLine(string msg);
     }
 }
