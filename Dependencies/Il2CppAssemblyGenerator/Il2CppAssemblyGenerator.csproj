@@ -13,12 +13,15 @@
 		<PreserveCompilationContext>false</PreserveCompilationContext>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\MelonLoader\MelonLoader.csproj" Private="false" />
-		<PackageReference Include="Iced" Version="1.21.0" ExcludeAssets="Runtime" />
-		<PackageReference Include="Il2CppInterop.Generator" Version="1.4.6-ci.433" ExcludeAssets="Runtime" />
-		<PackageReference Include="Il2CppInterop.Common" Version="1.4.6-ci.433" ExcludeAssets="Runtime" />
-		<PackageReference Include="Il2CppInterop.Runtime" Version="1.4.6-ci.433" ExcludeAssets="Runtime" />
+		<PackageReference Include="Iced" Version="1.21.0" />
 		<PackageReference Include="Mono.Cecil" Version="0.11.5" ExcludeAssets="Runtime" />
+		<ProjectReference Include="..\..\External\Cpp2IL\Cpp2IL.Core\Cpp2IL.Core.csproj" />
+		<ProjectReference Include="..\..\External\Cpp2IL\LibCpp2IL\LibCpp2IL.csproj" />
+		<ProjectReference Include="..\..\External\Il2CppInterop\Il2CppInterop.Common\Il2CppInterop.Common.csproj" />
+		<ProjectReference Include="..\..\External\Il2CppInterop\Il2CppInterop.Generator\Il2CppInterop.Generator.csproj" />
+		<ProjectReference Include="..\..\External\Il2CppInterop\Il2CppInterop.Runtime\Il2CppInterop.Runtime.csproj" />
+		<ProjectReference Include="..\..\External\JNISharp\JNISharp\JNISharp.csproj" />
+		<ProjectReference Include="..\..\MelonLoader\MelonLoader.csproj" Private="false" />
 		<PackageReference Include="AssetRipper.VersionUtilities" Version="1.5.0" ExcludeAssets="Runtime" />
 	</ItemGroup>
 </Project>
