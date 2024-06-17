@@ -49,12 +49,12 @@
 		<Compile Include="..\UnityMappers.cs" Link="UnityMappers.cs" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\External\Il2CppInterop\Il2CppInterop.Common\Il2CppInterop.Common.csproj" />
+		<ProjectReference Include="..\..\..\External\Il2CppInterop\Il2CppInterop.HarmonySupport\Il2CppInterop.HarmonySupport.csproj" />
+		<ProjectReference Include="..\..\..\External\Il2CppInterop\Il2CppInterop.Runtime\Il2CppInterop.Runtime.csproj" />
 		<ProjectReference Include="..\..\..\MelonLoader\MelonLoader.csproj" Private="false" />
 		<PackageReference Include="AssetRipper.VersionUtilities" Version="1.5.0" ExcludeAssets="Runtime" />
 		<PackageReference Include="Iced" Version="1.21.0" />
-		<PackageReference Include="Il2CppInterop.Common" Version="1.4.6-ci.394" />
-		<PackageReference Include="Il2CppInterop.HarmonySupport" Version="1.4.6-ci.394" />
-		<PackageReference Include="Il2CppInterop.Runtime" Version="1.4.6-ci.394" />
 		<PackageReference Include="Mono.Cecil" Version="0.11.5" ExcludeAssets="Runtime" />
 		<PackageReference Include="Samboy063.Tomlet" Version="5.3.1" ExcludeAssets="Runtime" />
 	</ItemGroup>
