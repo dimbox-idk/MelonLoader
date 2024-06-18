@@ -14,7 +14,10 @@ Rough steps
 5. Take the files from `BaseLibs/dotnet_fixed_gc` and replace the files in `dotnet/shared/Microsoft.NETCore.App/8.0.6` with them.
    - This fixes a bug where Mono and IL2CPP fight each other's garbage collector, causing freezes and/or crashes. If you want to compile this fix manually (available in LemonLoader/runtime), the Docker command I used is below.
 6. Compile the MelonLoader solution and copy the resulting output into the `MelonLoader` folder.
-7. Copy `Il2CppInterop.Common.dll`, `Il2CppInterop.Generator.dll`, and `Il2CppInterop.Runtime.dll` from `MelonLoader/net8` into `MelonLoader/Dependencies/Il2CppAssemblyGenerator`.
+7. Add the following permissions to your APK's manifest.
+   - `android.permission.ACCESS_NETWORK_STATE`
+   - `android.permission.INTERNET`
+
 
 .NET Runtime fork compilation command (ran on Ubuntu 18.04 x86_64 in a VM)
 ```
