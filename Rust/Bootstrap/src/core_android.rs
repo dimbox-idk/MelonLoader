@@ -1,4 +1,4 @@
-use crate::{log, melonenv::paths};
+use crate::{log, melonenv::paths, utils::apk_asset_manager::copy_melonloader_data};
 use jni::{
     sys::{jint, JNI_VERSION_1_6},
     JNIEnv, JavaVM,
@@ -22,6 +22,12 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _: *mut c_void) -> jint {
         .expect("Unable to attach current thread to the JVM");
 
     paths::cache_data_dir(&mut env);
+
+    let melonloader_path = paths::MELONLOADER_FOLDER.clone().0;
+    if std::fs::metadata(&melonloader_path).is_err() {
+        std::fs::create_dir_all(&melonloader_path).unwrap();
+    }
+
     crate::logging::logger::init().expect("Failed to initialize logger!");
 
     #[cfg(debug_assertions)]
@@ -32,9 +38,11 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _: *mut c_void) -> jint {
         crate::dotnet_trace::redirect_stdout();
     });
 
-    // TODO: copy dotnet runtime into /data/data
-
     log!("JNI initialized!");
+    
+    copy_melonloader_data(&mut env).unwrap();
+
+    log!("APK assets copied!");
 
     catch_unwind(|| JNI_VERSION_1_6).unwrap_or(INVALID_JNI_VERSION)
 }
