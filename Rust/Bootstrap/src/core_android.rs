@@ -39,7 +39,8 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _: *mut c_void) -> jint {
     });
 
     log!("JNI initialized!");
-    
+
+    // TODO: potentially store a modification time inside the APK and only copy if it's newer
     copy_melonloader_data(&mut env).unwrap();
 
     log!("APK assets copied!");
