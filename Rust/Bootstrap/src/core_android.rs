@@ -1,4 +1,4 @@
-use crate::{log, melonenv::paths, utils::apk_asset_manager::copy_melonloader_data};
+use crate::{log, melonenv::paths, utils::apk_asset_manager::{copy_melonloader_data, get_apk_modification_date}};
 use jni::{
     sys::{jint, JNI_VERSION_1_6},
     JNIEnv, JavaVM,
@@ -39,9 +39,9 @@ pub extern "system" fn JNI_OnLoad(vm: JavaVM, _: *mut c_void) -> jint {
     });
 
     log!("JNI initialized!");
-
-    // TODO: potentially store a modification time inside the APK and only copy if it's newer
-    copy_melonloader_data(&mut env).unwrap();
+    
+    let lemon_patch_date = get_apk_modification_date(&mut env).unwrap();
+    copy_melonloader_data(&mut env, lemon_patch_date).unwrap();
 
     log!("APK assets copied!");
 
