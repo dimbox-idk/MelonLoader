@@ -12,9 +12,11 @@ Rough steps
 4. Take the files from `BaseLibs/dotnet_fixed_gc` and replace the files in `dotnet/shared/Microsoft.NETCore.App/8.0.6` with them.
    - This fixes a bug where Mono and IL2CPP fight each other's garbage collector, causing freezes and/or crashes. If you want to compile this fix manually (available in LemonLoader/runtime), the Docker command I used is below.
 5. Compile the MelonLoader solution and copy the resulting output into your APK's `assets` folder.
-6. Add the following permissions to your APK's manifest.
+6. Download your app's corresponding Unity dependencies from [here](https://lemon.sircoolness.dev/android/) and replace the APK's `libunity.so` with the one from the downloaded zip.
+   - Be sure to match the architecture correctly or the app will not function.
+7. Add the following permissions to your APK's manifest.
    - `android.permission.INTERNET`
-7. [Optional] Create the file `lemon_patch_date.txt` inside your APK's `assets` folder and add the current time in RFC 3339 format.
+8. [Optional] Create the file `lemon_patch_date.txt` inside your APK's `assets` folder and add the current time in RFC 3339 format.
    - This makes it so the Bootstrap both won't copy all of MelonLoader and dotnet every single startup and allows MelonLoader files to be replaced without the Bootstrap overriding changes.
    - If this file does not exist, all MelonLoader and dotnet files will be copied on every game launch.
 
