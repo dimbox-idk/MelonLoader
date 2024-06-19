@@ -16,6 +16,9 @@ Rough steps
 6. Add the following permissions to your APK's manifest.
    - `android.permission.ACCESS_NETWORK_STATE`
    - `android.permission.INTERNET`
+7. [Optional] Create the file `lemon_patch_date.txt` inside your APK's `assets` folder and add the current time in RFC 3339 format.
+   - This makes it so the Bootstrap both won't copy all of MelonLoader and dotnet every single startup and allows MelonLoader files to be replaced without the Bootstrap overriding changes.
+   - If this file does not exist, all MelonLoader and dotnet files will be copied on every game launch.
 
 
 .NET Runtime fork compilation command (ran on Ubuntu 18.04 x86_64 in a VM)
