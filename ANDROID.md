@@ -7,7 +7,6 @@ Rough steps
    - `libmain.so` (compiled; replaces the original)
    - `libBootstrap.so` (compiled)
    - `libdobby.so` (available [here](https://github.com/RinLovesYou/dobby-sys/raw/master/dobby_libraries/android/arm64/libdobby.so))
-   - `libhostfxr.so` (available inside the dotnet runtime [here](https://dotnetcli.azureedge.net/dotnet/Runtime/8.0.6/dotnet-runtime-8.0.6-linux-bionic-arm64.tar.gz))
    - `libssl.so` and `libcrypto.so` (both available inside this repo's `BaseLibs/openssl` folder; can also be compiled manually)
 3. Download the .NET runtime for Android [here](https://dotnetcli.azureedge.net/dotnet/Runtime/8.0.6/dotnet-runtime-8.0.6-linux-bionic-arm64.tar.gz) and extract it's contents into `assets/dotnet` inside the decompiled APK.
 4. Take the files from `BaseLibs/dotnet_fixed_gc` and replace the files in `dotnet/shared/Microsoft.NETCore.App/8.0.6` with them.

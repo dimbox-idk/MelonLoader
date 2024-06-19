@@ -49,7 +49,8 @@ lazy_static! {
 pub fn init() -> Result<(), DynErr> {
     let runtime_dir = melonenv::paths::runtime_dir()?;
 
-    let hostfxr = Hostfxr::load_from_path("libhostfxr.so").map_err(|_| DotnetErr::FailedHostFXRLoad)?;
+    let hostfxr_path = melonenv::paths::get_dotnet_path()?.join("host/fxr/8.0.6/libhostfxr.so");
+    let hostfxr = Hostfxr::load_from_path(hostfxr_path).map_err(|_| DotnetErr::FailedHostFXRLoad)?;
 
     let config_path = runtime_dir.join("MelonLoader.runtimeconfig.json");
     if !config_path.exists() {
