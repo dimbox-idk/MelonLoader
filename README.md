@@ -20,7 +20,7 @@
   - Made the original version of Lemon which gave me a major starting place.
   - Spent a lot of time helping me being stupid when compiling stuff and answering various questions :P
   - Hosts all of the Unity dependencies the installer uses
-  - Wrote the Mono garbage collected fix I ported for use with the .NET Runtime.
+  - Wrote the Mono garbage collection fix I ported for use with the .NET Runtime.
 - [RinLovesYou](https://github.com/RinLovesYou) - Helped me with various Rust/Bootstrap stuff
 - [SamboyCoding](https://github.com/SamboyCoding) - Helped me with various things
 - [Someone Somewhere](https://github.com/someonesomewheredev/) - Helped me with various things
