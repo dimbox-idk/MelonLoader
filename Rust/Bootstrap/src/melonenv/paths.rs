@@ -89,6 +89,10 @@ pub fn get_managed_dir() -> Result<PathBuf, DynErr> {
     }
 }
 
+pub fn get_internal_data_path() -> Result<PathBuf, DynErr> {
+    Ok(PathBuf::from("/data/data/").join(get_package_name()?))
+}
+
 pub fn get_dotnet_path() -> Result<PathBuf, DynErr> {
     Ok(PathBuf::from("/data/data/")
         .join(get_package_name()?)

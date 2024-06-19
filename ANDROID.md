@@ -9,12 +9,11 @@ Rough steps
    - `libdobby.so` (available [here](https://github.com/RinLovesYou/dobby-sys/raw/master/dobby_libraries/android/arm64/libdobby.so))
    - `libhostfxr.so` (available inside the dotnet runtime [here](https://dotnetcli.azureedge.net/dotnet/Runtime/8.0.6/dotnet-runtime-8.0.6-linux-bionic-arm64.tar.gz))
    - `libssl.so` and `libcrypto.so` (both available inside this repo's `BaseLibs/openssl` folder; can also be compiled manually)
-3. Create a folder named `MelonLoader` inside your app's `Android/data` folder.
-4. Download the .NET runtime for Android [here](https://dotnetcli.azureedge.net/dotnet/Runtime/8.0.6/dotnet-runtime-8.0.6-linux-bionic-arm64.tar.gz) and extract it's contents into `assets/dotnet` inside the decompiled APK.
-5. Take the files from `BaseLibs/dotnet_fixed_gc` and replace the files in `dotnet/shared/Microsoft.NETCore.App/8.0.6` with them.
+3. Download the .NET runtime for Android [here](https://dotnetcli.azureedge.net/dotnet/Runtime/8.0.6/dotnet-runtime-8.0.6-linux-bionic-arm64.tar.gz) and extract it's contents into `assets/dotnet` inside the decompiled APK.
+4. Take the files from `BaseLibs/dotnet_fixed_gc` and replace the files in `dotnet/shared/Microsoft.NETCore.App/8.0.6` with them.
    - This fixes a bug where Mono and IL2CPP fight each other's garbage collector, causing freezes and/or crashes. If you want to compile this fix manually (available in LemonLoader/runtime), the Docker command I used is below.
-6. Compile the MelonLoader solution and copy the resulting output into the `MelonLoader` folder.
-7. Add the following permissions to your APK's manifest.
+5. Compile the MelonLoader solution and copy the resulting output into your APK's `assets` folder.
+6. Add the following permissions to your APK's manifest.
    - `android.permission.ACCESS_NETWORK_STATE`
    - `android.permission.INTERNET`
 
