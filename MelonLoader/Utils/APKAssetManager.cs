@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using JNISharp.NativeInterface;
 
 namespace MelonLoader.Utils;
@@ -54,23 +55,20 @@ public static class APKAssetManager
 
     public static bool DoesAssetExist(string path)
     {
-        JString pathString = JNI.NewString(path);
-        JObject asset = JNI.CallObjectMethod<JObject>(assetManager, JNI.GetMethodID(JNI.GetObjectClass(assetManager), "open", "(Ljava/lang/String;)Ljava/io/InputStream;"), new JValue(pathString));
-        if (JNI.ExceptionCheck())
+        // using `list` isn't as fast as just calling open, but this allows the function to not crash on debuggable builds of apps
+        string containingDir = path[..path.LastIndexOf('/')];
+        JString pathString = JNI.NewString(containingDir);
+        JObjectArray<JString> assets = JNI.CallObjectMethod<JObjectArray<JString>>(assetManager, JNI.GetMethodID(JNI.GetObjectClass(assetManager), "list", "(Ljava/lang/String;)[Ljava/lang/String;"), new JValue(pathString));
+
+        bool exists = assets.Any(js =>
         {
-            JNI.ExceptionClear();
-            return false;
-        }
-
-        if (asset == null || !asset.Valid())
-            return false;
-
-        JMethodID closeMethodID = JNI.GetMethodID(JNI.GetObjectClass(asset), "close", "()V");
-        JNI.CallVoidMethod(asset, closeMethodID);
+            string asset = JNI.GetJStringString(js);
+            return path.EndsWith(asset);
+        });
 
         HandleException();
 
-        return true;
+        return exists;
     }
 
     private static void HandleException()
