@@ -22,8 +22,9 @@
   - Hosts all of the Unity dependencies the installer uses
   - Wrote the Mono garbage collection fix I ported for use with the .NET Runtime.
 - [RinLovesYou](https://github.com/RinLovesYou) - Helped me with various Rust/Bootstrap stuff
-- [SamboyCoding](https://github.com/SamboyCoding) - Helped me with various things
 - [Someone Somewhere](https://github.com/someonesomewheredev/) - Helped me with various things
+- [SamboyCoding](https://github.com/SamboyCoding) - Helped me with various things
+- [Parzival](https://github.com/Parzival-3141/) - Helped me with various things
 - [zCubed](https://github.com/zCubed3/) - Helped me with various things
 
 
@@ -63,6 +64,7 @@ Third-party Libraries used as Source Code and/or bundled in Binary Form:
 - [.NET Runtime](https://github.com/dotnet/runtime) is licensed under the MIT License. See [LICENSE](https://github.com/dotnet/runtime/blob/main/LICENSE.TXT) for full License.
 - [Cpp2IL](https://github.com/SamboyCoding/Cpp2IL) is licensed under the MIT License. See [LICENSE](https://github.com/SamboyCoding/Cpp2IL/blob/master/LICENSE) for the full License.
 - [OpenSSL](https://github.com/openssl/openssl) is licensed under the Apache License, Version 2.0. See [LICENSE](https://github.com/openssl/openssl/blob/master/LICENSE.txt) for the full License.
+- [JNISharp](https://github.com/WarrenUlrich/JNISharp) is licensed under the MIT License. See [LICENSE](https://github.com/WarrenUlrich/JNISharp/blob/master/LICENSE) for the full License.
 
 External Libraries and Tools that are downloaded and used at Runtime:
 - [Il2CppDumper](https://github.com/Perfare/Il2CppDumper) is licensed under the MIT License. See [LICENSE](https://github.com/Perfare/Il2CppDumper/blob/master/LICENSE) for the full License.
