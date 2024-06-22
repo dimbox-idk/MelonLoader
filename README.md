@@ -10,7 +10,7 @@
 	<a href="https://github.com/LemonLoader/MelonLoader2/releases/latest"><img src="https://img.shields.io/github/v/release/LemonLoader/MelonLoader2?label=latest&style=for-the-badge"></a>
 	<a href="https://github.com/LemonLoader/MelonLoader2/releases"><img src="https://img.shields.io/github/downloads/LemonLoader/MelonLoader2/total.svg?style=for-the-badge"></a>
 	<a href="https://github.com/LemonLoader/MelonLoader2/graphs/contributors"><img src="https://img.shields.io/github/contributors/LemonLoader/MelonLoader2?style=for-the-badge"></a>
-	<a href="https://discord.gg/2Wn3N2P"><img src="https://img.shields.io/discord/838613285749653534?label=discord&style=for-the-badge&color=blueviolet"></a>
+	<a href="https://discord.gg/RAFGe33Y28"><img src="https://img.shields.io/discord/838613285749653534?label=discord&style=for-the-badge&color=blueviolet"></a>
 </p>
 
 ---
