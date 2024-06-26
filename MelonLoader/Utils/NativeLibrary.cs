@@ -1,4 +1,7 @@
-﻿using System;
+﻿using MelonLoader.Utils;
+using System;
+using System.CodeDom;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -54,55 +57,56 @@ namespace MelonLoader
 
         public static IntPtr AgnosticLoadLibrary(string name)
         {
-            var platform = Environment.OSVersion.Platform;
-
-            switch (platform)
+            string path = name;
+            if (File.Exists(path)) // prevents it from copying libs that don't need copied
             {
-                case PlatformID.Win32S:
-                case PlatformID.Win32Windows:
-                case PlatformID.Win32NT:
-                case PlatformID.WinCE:
-                    return LoadLibrary(name);
-                
-                case PlatformID.Unix:
-                case PlatformID.MacOSX:
-                    return dlopen(name, RTLD_NOW);
+                string fileName = Path.GetFileName(path);
+                // gotta love net35 not having a combine with more than two arguments
+                path = Path.Combine("/data/data/", MelonEnvironment.PackageName);
+                path = Path.Combine(path, fileName);
+
+                FileInfo newLib = new(name);
+                FileInfo copiedLib = new(path);
+                if (copiedLib.Exists && newLib.LastWriteTime > copiedLib.LastWriteTime)
+                {
+                    copiedLib.Delete();
+                    File.Copy(name, path);
+                }
+                else if (!copiedLib.Exists)
+                    File.Copy(name, path);
             }
-            
-            throw new PlatformNotSupportedException($"Unsupported platform: {platform}");
+
+            return dlopen(path, RTLD_NOW);
+        }
+
+        public static IntPtr AgnosticLoadLibrary(Stream stream, string fileName)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            string path = Path.Combine("/data/data/", MelonEnvironment.PackageName);
+            path = Path.Combine(path, fileName);
+
+            if (File.Exists(path))
+                File.Delete(path);
+
+            using FileStream fileStream = File.OpenWrite(path);
+            byte[] buffer = new byte[stream.Length];
+            stream.Read(buffer, 0, buffer.Length);
+            fileStream.Write(buffer, 0, buffer.Length);
+
+            return dlopen(path, RTLD_NOW);
         }
 
         public static IntPtr AgnosticGetProcAddress(IntPtr hModule, string lpProcName)
         {
-            var platform = Environment.OSVersion.Platform;
-
-            switch (platform)
-            {
-                case PlatformID.Win32S:
-                case PlatformID.Win32Windows:
-                case PlatformID.Win32NT:
-                case PlatformID.WinCE:
-                    return GetProcAddress(hModule, lpProcName);
-                
-                case PlatformID.Unix:
-                case PlatformID.MacOSX:
-                    return dlsym(hModule, lpProcName);
-            }
-            
-            throw new PlatformNotSupportedException($"Unsupported platform: {platform}");
+            return dlsym(hModule, lpProcName);
         }
 
-        [DllImport("kernel32", CharSet = CharSet.Unicode)]
-        private static extern IntPtr LoadLibrary(string lpLibFileName);
-        [DllImport("kernel32")]
-        internal static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
-        [DllImport("kernel32")]
-        internal static extern IntPtr FreeLibrary(IntPtr hModule);
-        
-        [DllImport("libdl.so.2")]
+        [DllImport("libdl.so")]
         protected static extern IntPtr dlopen(string filename, int flags);
 
-        [DllImport("libdl.so.2")]
+        [DllImport("libdl.so")]
         protected static extern IntPtr dlsym(IntPtr handle, string symbol);
 
         const int RTLD_NOW = 2; // for dlopen's flags 
