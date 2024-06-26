@@ -8,6 +8,7 @@
             BootstrapInterop.HookDetach = NativeEntryPoint.Exports.HookDetach;
             BootstrapInterop.LogConsole = NativeEntryPoint.Exports.LogConsole;
             BootstrapInterop.GetJavaVM = NativeEntryPoint.Exports.GetJavaVM;
+            BootstrapInterop.GetPackageName = NativeEntryPoint.Exports.GetPackageName;
 
             Core.Initialize();
         }
