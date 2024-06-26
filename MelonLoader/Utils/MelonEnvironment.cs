@@ -21,6 +21,7 @@ namespace MelonLoader.Utils
 
         public static string MelonLoaderDirectory { get; internal set; }
         public static string GameRootDirectory { get; internal set; }
+        public static string PackageName { get; internal set; }
 
 #if NET6_0_OR_GREATER
         public static string GameExecutablePath => System.Environment.ProcessPath;
@@ -39,7 +40,7 @@ namespace MelonLoader.Utils
         public static string MelonLoaderLogsDirectory => Path.Combine(MelonLoaderDirectory, "Logs");
         public static string OurRuntimeDirectory => Path.Combine(MelonLoaderDirectory, OurRuntimeName);
 
-        public static string GameExecutableName => Path.GetFileNameWithoutExtension(GameExecutablePath); // TODO: should return the package name probably; could pass it through HostExports?
+        public static string GameExecutableName => Path.GetFileNameWithoutExtension(GameExecutablePath);
         public static string UnityGameDataDirectory => "bin/Data/"; // inside the APK's assets directory; we're interacting with it via the AssetManager API so this makes sense
         public static string Il2CppDataDirectory => Path.Combine(UnityGameDataDirectory, "il2cpp_data");
         public static string UnityPlayerPath => Path.Combine(GameRootDirectory, "UnityPlayer.dll");

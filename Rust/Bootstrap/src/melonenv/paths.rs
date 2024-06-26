@@ -108,6 +108,16 @@ pub fn get_package_name() -> Result<String, DynErr> {
     }
 }
 
+pub unsafe fn get_package_name_raw() -> *const libc::c_char {
+    use std::ffi::CString;
+    let package_name = get_package_name().unwrap_or_else(|e| {
+        internal_failure!("Failed to get package name: {e}");
+    });
+
+    let raw_string = CString::new(package_name).unwrap();
+    raw_string.into_raw()
+}
+
 pub fn current_dir() -> Result<PathBuf, DynErr> {
     unsafe {
         match DATA_DIR.clone() {

@@ -15,6 +15,7 @@ namespace MelonLoader
         internal static delegate* unmanaged<void**, void*, void> HookDetach;
         internal static delegate* unmanaged<string, void> LogConsole;
         internal static delegate* unmanaged<void**> GetJavaVM;
+        internal static delegate* unmanaged<string> GetPackageName;
 #endif
 
         internal static void SetDefaultConsoleTitleWithGameName([MarshalAs(UnmanagedType.LPStr)] string GameName, [MarshalAs(UnmanagedType.LPStr)] string GameVersion = null)
@@ -65,6 +66,8 @@ namespace MelonLoader
         public static extern void NativeLogConsole(string msg);
         [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern IntPtr NativeGetJavaVM();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern string NativeGetPackageName();
 #else
         public static void NativeHookAttach(IntPtr target, IntPtr detour)
         {
@@ -95,6 +98,11 @@ namespace MelonLoader
         public static unsafe IntPtr NativeGetJavaVM()
         {
             return (IntPtr)GetJavaVM();
+        }
+
+        public static unsafe string NativeGetPackageName()
+        {
+            return GetPackageName();
         }
 #endif
     }

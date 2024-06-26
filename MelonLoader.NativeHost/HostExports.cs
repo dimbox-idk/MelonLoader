@@ -7,5 +7,6 @@ namespace MelonLoader.NativeHost
         internal delegate* unmanaged<void**, void*, void> HookDetach;
         internal delegate* unmanaged<string, void> LogConsole;
         internal delegate* unmanaged<void**> GetJavaVM;
+        internal delegate* unmanaged<string> GetPackageName;
     }
 }
