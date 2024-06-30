@@ -22,7 +22,6 @@ namespace MelonLoader.MonoInternals
                 MelonEnvironment.MelonBaseDirectory,
                 MelonEnvironment.GameRootDirectory,
                 MelonEnvironment.OurRuntimeDirectory,
-                MelonEnvironment.UnityGameManagedDirectory,
             };
             foreach (string path in searchdirlist)
                 AddSearchDirectory(path);
