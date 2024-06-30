@@ -1,8 +1,8 @@
-﻿using MelonLoader.Modules;
+﻿#if NET6_0_OR_GREATER
+using MelonLoader.Modules;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 using MelonLoader.Utils;
 
 namespace MelonLoader.InternalUtils
@@ -36,3 +36,4 @@ namespace MelonLoader.InternalUtils
         }
     }
 }
+#endif

@@ -24,6 +24,7 @@ namespace MelonLoader
 {
     public static class MelonUtils
     {
+        internal static NativeLibrary.StringDelegate WineGetVersion;
         private static readonly Random RandomNumGen = new();
         private static readonly MethodInfo StackFrameGetMethod = typeof(StackFrame).GetMethod("GetMethod", BindingFlags.Instance | BindingFlags.Public);
     
@@ -397,7 +398,7 @@ namespace MelonLoader
 
         public static bool IsOldMono() => false;
 
-        public static bool IsUnderWineOrSteamProton() => Core.WineGetVersion is not null;
+        public static bool IsUnderWineOrSteamProton() => WineGetVersion is not null;
 
         [Obsolete("Use MelonEnvironment.GameExecutablePath instead")]
         public static string GetApplicationPath() => MelonEnvironment.GameExecutablePath;
@@ -422,6 +423,46 @@ namespace MelonLoader
             if (fileInfo != null)
                 return fileInfo.ProductName;
             return null;
+        }
+
+        internal static void SetupWineCheck()
+        {
+            if (IsUnix || IsMac)
+                return;
+
+            IntPtr dll = NativeLibrary.LoadLib("ntdll.dll");
+            IntPtr wine_get_version_proc = NativeLibrary.AgnosticGetProcAddress(dll, "wine_get_version");
+            if (wine_get_version_proc == IntPtr.Zero)
+                return;
+
+            WineGetVersion = (NativeLibrary.StringDelegate)Marshal.GetDelegateForFunctionPointer(
+                wine_get_version_proc,
+                typeof(NativeLibrary.StringDelegate)
+            );
+        }
+
+        internal static string GetOSVersion()
+        {
+            StringBuilder sb = new();
+            sb.Append("Android ");
+            int apiLevel = Environment.OSVersion.Version.Major;
+            // https://apilevels.com/
+            string androidVersion = apiLevel switch
+            {
+                27 => "8.1",
+                28 => "9",
+                29 => "10",
+                30 => "11",
+                31 => "12",
+                32 => "12L",
+                33 => "13",
+                34 => "14",
+                35 => "15",
+                _ => $"API Level {apiLevel}"
+            };
+            sb.Append(androidVersion);
+
+            return sb.ToString();
         }
 
         [Obsolete("Use NativeUtils.NativeHook instead")]

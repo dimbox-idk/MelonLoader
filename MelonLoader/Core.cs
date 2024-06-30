@@ -26,11 +26,10 @@ namespace MelonLoader
 {
 	internal static class Core
     {
-        internal static HarmonyLib.Harmony HarmonyInstance;
-        
-        internal static bool Is_ALPHA_PreRelease = false;
+        private static bool _success = true;
 
-        internal static NativeLibrary.StringDelegate WineGetVersion;
+        internal static HarmonyLib.Harmony HarmonyInstance;
+        internal static bool Is_ALPHA_PreRelease = false;
 
         internal static int Initialize()
         {
@@ -48,28 +47,16 @@ namespace MelonLoader
             APKAssetManager.Initialize();
             MelonLogger.Msg("Initialized JNI");
 
-#if NET6_0_OR_GREATER
-            if (MelonLaunchOptions.Core.UserWantsDebugger && MelonEnvironment.IsDotnetRuntime)
-            {
-                MelonLogger.Msg("[Init] User requested debugger, attempting to launch now...");
-                Debugger.Launch();
-            }
-
-            Environment.SetEnvironmentVariable("IL2CPP_INTEROP_DATABASES_LOCATION", MelonEnvironment.Il2CppAssembliesDirectory);
-#endif
-
 #if NET35
             // Disabled for now because of issues
             //Net20Compatibility.TryInstall();
 #endif
 
-            SetupWineCheck();
+            MelonUtils.SetupWineCheck();
             Utils.MelonConsole.Init();
 
             if (MelonUtils.IsUnderWineOrSteamProton())
                 Pastel.ConsoleExtensions.Disable();
-
-            ManagedAnalyticsBlocker.Install();
 
             Fixes.DotnetLoadFromManagedFolderFix.Install();
             Fixes.UnhandledException.Install(AppDomain.CurrentDomain);
@@ -83,7 +70,10 @@ namespace MelonLoader
             {
                 if (!MonoLibrary.Setup()
                     || !MonoResolveManager.Setup())
+                {
+                    _success = false;
                     return 1;
+                }
             }
             catch (SecurityException)
             {
@@ -94,13 +84,23 @@ namespace MelonLoader
                 MelonDebug.Msg("[MonoLibrary] Caught MissingMethodException, assuming not running under mono and continuing with init");
             }
 
+#if NET6_0_OR_GREATER
+            if (MelonLaunchOptions.Core.UserWantsDebugger && MelonEnvironment.IsDotnetRuntime)
+            {
+                MelonLogger.Msg("[Init] User requested debugger, attempting to launch now...");
+                Debugger.Launch();
+            }
+
+            Environment.SetEnvironmentVariable("IL2CPP_INTEROP_DATABASES_LOCATION", MelonEnvironment.Il2CppAssembliesDirectory);
+#endif
+
             MonoMod.Logs.DebugLog.OnLog += (string source, DateTime time, MonoMod.Logs.LogLevel level, string message) => MelonDebug.Msg($"[MonoMod] [{source}] [{level}] {message}");
 
             HarmonyInstance = new HarmonyLib.Harmony(BuildInfo.Name);
             
 #if NET6_0_OR_GREATER
             // if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                // NativeStackWalk.LogNativeStackTrace();
+            //  NativeStackWalk.LogNativeStackTrace();
 
             Fixes.DotnetAssemblyLoadContextFix.Install();
             Fixes.DotnetModHandlerRedirectionFix.Install();
@@ -109,6 +109,11 @@ namespace MelonLoader
             Fixes.ForcedCultureInfo.Install();
             Fixes.InstancePatchFix.Install();
             Fixes.ProcessFix.Install();
+
+#if NET6_0_OR_GREATER
+            Fixes.Il2CppInteropFixes.Install();
+#endif
+
             PatchShield.Install();
 
             MelonPreferences.Load();
@@ -126,14 +131,25 @@ namespace MelonLoader
         internal static int PreStart()
         {
             MelonEvents.OnApplicationEarlyStart.Invoke();
-            return Il2CppGameSetup();
+            return PreSetup();
         }
 
-        private static int Il2CppGameSetup()
-            => Il2CppAssemblyGenerator.Run() ? 0 : 1;
+        private static int PreSetup()
+        {
+            if (_success)
+            {
+#if NET6_0_OR_GREATER
+                _success = Il2CppAssemblyGenerator.Run();
+#endif
+            }
+            return _success ? 0 : 1;
+        }
 
         internal static int Start()
         {
+            if (!_success)
+                return 1;
+
             MelonEvents.OnPreModsLoaded.Invoke();
             MelonHandler.LoadMelonsFromDirectory<MelonMod>(MelonEnvironment.ModsDirectory);
 
@@ -166,7 +182,7 @@ namespace MelonLoader
 
             MelonLogger.MsgDirect("------------------------------");
             MelonLogger.MsgDirect(GetVersionString());
-            MelonLogger.MsgDirect($"OS: {GetOSVersion()}");
+            MelonLogger.MsgDirect($"OS: {MelonUtils.GetOSVersion()}");
             MelonLogger.MsgDirect($"Hash Code: {MelonUtils.HashCode}");
             MelonLogger.MsgDirect("------------------------------");
             var typeString = MelonUtils.IsGameIl2Cpp() ? "Il2cpp" : MelonUtils.IsOldMono() ? "Mono" : "MonoBleedingEdge";
@@ -176,99 +192,6 @@ namespace MelonLoader
             MelonLogger.MsgDirect("------------------------------");
 
             MelonEnvironment.PrintEnvironment();
-        }
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        internal static extern uint RtlGetVersion(out OsVersionInfo versionInformation); // return type should be the NtStatus enum
-        
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct OsVersionInfo
-        {
-            private readonly uint OsVersionInfoSize;
-
-            internal readonly uint MajorVersion;
-            internal readonly uint MinorVersion;
-
-            internal readonly uint BuildNumber;
-
-            private readonly uint PlatformId;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-            internal readonly string CSDVersion;
-        }
-        
-        internal static string GetOSVersion()
-        {
-            if (MelonUtils.IsAndroid)
-            {
-                StringBuilder sb = new();
-                sb.Append("Android ");
-                int apiLevel = Environment.OSVersion.Version.Major;
-                // https://apilevels.com/
-                string androidVersion = apiLevel switch
-                {
-                    27 => "8.1",
-                    28 => "9",
-                    29 => "10",
-                    30 => "11",
-                    31 => "12",
-                    32 => "12L",
-                    33 => "13",
-                    34 => "14",
-                    35 => "15",
-                    _ => $"API Level {apiLevel}"
-                };
-                sb.Append(androidVersion);
-
-                return sb.ToString();
-            }
-
-            if (MelonUtils.IsUnix || MelonUtils.IsMac)
-                return Environment.OSVersion.VersionString;
-            
-            if (MelonUtils.IsUnderWineOrSteamProton())
-                return $"Wine {WineGetVersion()}";
-            RtlGetVersion(out OsVersionInfo versionInformation);
-            var minor = versionInformation.MinorVersion;
-            var build = versionInformation.BuildNumber;
-
-            string versionString = "";
-
-            switch (versionInformation.MajorVersion)
-            {
-                case 4:
-                    versionString = "Windows 95/98/Me/NT";
-                    break;
-                case 5:
-                    if (minor == 0)
-                        versionString = "Windows 2000";
-                    if (minor == 1)
-                        versionString = "Windows XP";
-                    if (minor == 2)
-                        versionString = "Windows 2003";
-                    break;
-                case 6:
-                    if (minor == 0)
-                        versionString = "Windows Vista";
-                    if (minor == 1)
-                        versionString = "Windows 7";
-                    if (minor == 2)
-                        versionString = "Windows 8";
-                    if (minor == 3)
-                        versionString = "Windows 8.1";
-                    break;
-                case 10:
-                    if (build >= 22000)
-                        versionString = "Windows 11";
-                    else
-                        versionString = "Windows 10";
-                    break;
-                default:
-                    versionString = "Unknown";
-                    break;
-            }
-
-            return $"{versionString}";
         }
         
         internal static void Quit()
@@ -287,22 +210,6 @@ namespace MelonLoader
 
             if (MelonLaunchOptions.Core.QuitFix)
                 Process.GetCurrentProcess().Kill();
-        }
-        
-        private static void SetupWineCheck()
-        {
-            if (MelonUtils.IsUnix || MelonUtils.IsMac)
-                return;
-            
-            IntPtr dll = NativeLibrary.LoadLib("ntdll.dll");
-            IntPtr wine_get_version_proc = NativeLibrary.AgnosticGetProcAddress(dll, "wine_get_version");
-            if (wine_get_version_proc == IntPtr.Zero)
-                return;
-
-            WineGetVersion = (NativeLibrary.StringDelegate)Marshal.GetDelegateForFunctionPointer(
-                wine_get_version_proc,
-                typeof(NativeLibrary.StringDelegate)
-            );
         }
 
         private static void AddUnityDebugLog()

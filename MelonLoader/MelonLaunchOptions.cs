@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace MelonLoader
 {
@@ -11,7 +10,6 @@ namespace MelonLoader
 
         static MelonLaunchOptions()
         {
-            AnalyticsBlocker.Setup();
             Core.Setup();
             Console.Setup();
             Il2CppAssemblyGenerator.Setup();
@@ -21,7 +19,6 @@ namespace MelonLoader
         internal static void Load()
         {
             List<string> foundOptions = new List<string>();
-
             LemonEnumerator<string> argEnumerator = new LemonEnumerator<string>(Environment.GetCommandLineArgs());
             while (argEnumerator.MoveNext())
             {
@@ -55,22 +52,9 @@ namespace MelonLoader
                     withArgFunc(cmdArg);
                 }
             }
-
-            if (foundOptions.Count <= 0)
-                return;
         }
 
-#region Args
-        public static class AnalyticsBlocker
-        {
-            public static bool ShouldDAB { get; internal set; }
-
-            internal static void Setup()
-            {
-                WithoutArg["melonloader.dab"] = () => ShouldDAB = true;
-
-            }
-        }
+        #region Args
 
         public static class Core
         {
@@ -87,7 +71,6 @@ namespace MelonLoader
             public static string UnityVersion { get; internal set; }
             public static bool IsDebug { get; internal set; }
             public static bool UserWantsDebugger { get; internal set; }
-            public static bool ShouldDisplayAnalyticsBlocker { get; internal set; }
 
             internal static void Setup()
             {
@@ -106,7 +89,6 @@ namespace MelonLoader
                 WithArg["melonloader.unityversion"] = (string arg) => UnityVersion = arg;
                 WithoutArg["melonloader.debug"] = () => IsDebug = true;
                 WithoutArg["melonloader.launchdebugger"] = () => UserWantsDebugger = true;
-                WithoutArg["melonloader.dab"] = () => ShouldDisplayAnalyticsBlocker = true;
             }
         }
 
@@ -143,17 +125,27 @@ namespace MelonLoader
             }
         }
 
+        public static class MonoModHookGenerator
+        {
+            public static bool Enabled { get; internal set; } = true;
+            public static bool ForceRegeneration { get; internal set; }
+
+            internal static void Setup()
+            {
+                WithoutArg["melonloader.disablemmh"] = () => Enabled = false;
+                WithoutArg["melonloader.mmhregenerate"] = () => ForceRegeneration = true;
+            }
+        }
+
         public static class Il2CppAssemblyGenerator
         {
             public static bool ForceRegeneration { get; internal set; }
             public static bool OfflineMode { get; internal set; }
-            public static bool DisableDeobfMapIntegrityCheck { get; internal set; }
             public static string ForceVersion_Dumper { get; internal set; }
             public static string ForceRegex { get; internal set; }
 
             internal static void Setup()
             {
-                WithoutArg["melonloader.disabledmic"] = () => DisableDeobfMapIntegrityCheck = true;
                 WithoutArg["melonloader.agfoffline"] = () => OfflineMode = true;
                 WithoutArg["melonloader.agfregenerate"] = () => ForceRegeneration = true;
                 WithArg["melonloader.agfvdumper"] = (string arg) => ForceVersion_Dumper = arg;
@@ -186,6 +178,7 @@ namespace MelonLoader
                 };
             }
         }
+
         #endregion
     }
 }
