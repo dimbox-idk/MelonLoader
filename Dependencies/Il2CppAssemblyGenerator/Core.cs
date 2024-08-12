@@ -18,7 +18,7 @@ namespace MelonLoader.Il2CppAssemblyGenerator
 
         internal static HttpClient webClient = null;
 
-        internal static Cpp2IL cpp2il = null;
+        internal static Packages.Cpp2IL cpp2il = null;
         internal static Cpp2IL_StrippedCodeRegSupport cpp2il_scrs = null;
 
         internal static Packages.Il2CppInterop il2cppinterop = null;
@@ -56,7 +56,7 @@ namespace MelonLoader.Il2CppAssemblyGenerator
             if (!MelonLaunchOptions.Il2CppAssemblyGenerator.OfflineMode)
                 RemoteAPI.Contact();
 
-            cpp2il = new Cpp2IL();
+            cpp2il = new Packages.Cpp2IL();
             cpp2il_scrs = new Cpp2IL_StrippedCodeRegSupport(cpp2il);
 
             il2cppinterop = new Packages.Il2CppInterop();

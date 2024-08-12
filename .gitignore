@@ -385,3 +385,4 @@ x64
 # Android Binaries
 Rust/MelonProxy/jniLibs/
 Rust/Bootstrap/jniLibs/
+/jniLibs

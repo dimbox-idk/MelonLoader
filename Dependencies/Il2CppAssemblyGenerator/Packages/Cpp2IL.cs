@@ -30,7 +30,7 @@ namespace MelonLoader.Il2CppAssemblyGenerator.Packages
 		
         internal Cpp2IL()
         {
-            Version = MelonLaunchOptions.Il2CppAssemblyGenerator.ForceVersion_Dumper;
+            Version = "2022.1.0-pre-release.16";
 
             Name = nameof(Cpp2IL);
             Destination = Path.Combine(Core.BasePath, Name);
