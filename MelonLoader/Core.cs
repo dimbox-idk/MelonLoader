@@ -6,12 +6,12 @@ using MelonLoader.InternalUtils;
 using MelonLoader.MonoInternals;
 using MelonLoader.Utils;
 using System.IO;
-using System.Runtime.InteropServices;
 using bHapticsLib;
 using System.Threading;
 using System.Text;
 using JNISharp.NativeInterface;
 using System.Linq;
+using System.Drawing;
 
 #if NET35
 using MelonLoader.CompatibilityLayers;
@@ -65,10 +65,11 @@ namespace MelonLoader
             Fixes.DotnetLoadFromManagedFolderFix.Install();
             Fixes.UnhandledException.Install(AppDomain.CurrentDomain);
             Fixes.ServerCertificateValidation.Install();
-            
-            MelonUtils.Setup(AppDomain.CurrentDomain);
-
             Assertions.LemonAssertMapping.Setup();
+
+            MelonUtils.Setup(AppDomain.CurrentDomain);
+            BootstrapInterop.SetDefaultConsoleTitleWithGameName(UnityInformationHandler.GameName, 
+                UnityInformationHandler.GameVersion);
 
             try
             {

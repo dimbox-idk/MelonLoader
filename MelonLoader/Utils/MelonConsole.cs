@@ -35,6 +35,12 @@ internal static class MelonConsole
         };
     }
 
+    private static bool ShouldNotUseWriter()
+        => (MelonUtils.IsUnderWineOrSteamProton()
+            || !MelonUtils.IsWindows
+            || MelonLaunchOptions.Console.ShouldHide
+            || (ConsoleOutWriter == null));
+
     internal static void WriteLine(string txt)
     {
         BootstrapInterop.NativeLogConsole(txt);
