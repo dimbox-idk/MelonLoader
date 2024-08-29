@@ -129,48 +129,11 @@ pub fn current_dir() -> Result<PathBuf, DynErr> {
 
 #[cfg(target_os = "android")]
 pub fn cache_data_dir(env: &mut JNIEnv) {
-    use jni::objects::JValueGen;
-
     let unity_class_name = "com/unity3d/player/UnityPlayer";
     let unity_class = &env
         .find_class(unity_class_name)
         .expect("Failed to find class com/unity3d/player/UnityPlayer");
 
-    let current_activity_obj: JObject = env
-        .get_static_field(unity_class, "currentActivity", "Landroid/app/Activity;")
-        .expect("Failed to get static field currentActivity")
-        .l()
-        .unwrap();
-
-    let ext_file_obj: JObject = env
-        .call_method(
-            current_activity_obj,
-            "getExternalFilesDir",
-            "(Ljava/lang/String;)Ljava/io/File;",
-            &[JValueGen::from(&JObject::null())],
-        )
-        .expect("Failed to invoke getExternalFilesDir()")
-        .l()
-        .unwrap();
-
-    let file_string: JString = env
-        .call_method(&ext_file_obj, "toString", "()Ljava/lang/String;", &[])
-        .expect("Failed to invoke toString()")
-        .l()
-        .unwrap()
-        .into();
-
-    let str_data: String = env
-        .get_string(&file_string)
-        .expect("Failed to get string from jstring")
-        .into();
-
-    env.delete_local_ref(ext_file_obj)
-        .expect("Failed to delete local ref");
-    env.delete_local_ref(file_string)
-        .expect("Failed to delete local ref");
-
-    // "use of moved value: `current_activity_obj`" shut the hell up no one asked
     let current_activity_obj: JObject = env
         .get_static_field(unity_class, "currentActivity", "Landroid/app/Activity;")
         .expect("Failed to get static field currentActivity")
@@ -196,6 +159,47 @@ pub fn cache_data_dir(env: &mut JNIEnv) {
 
     env.delete_local_ref(package_jstr)
         .expect("Failed to delete local ref");
+
+    let env_class = env
+        .find_class("android/os/Environment")
+        .expect("Failed to find class android/os/Environment");
+
+    let ext_dir_obj: JObject = env
+        .call_static_method(
+            env_class,
+            "getExternalStorageDirectory",
+            "()Ljava/io/File;",
+            &[],
+        )
+        .expect("Failed to invoke getExternalFilesDir()")
+        .l()
+        .unwrap();
+
+    let file_string: JString = env
+        .call_method(&ext_dir_obj, "toString", "()Ljava/lang/String;", &[])
+        .expect("Failed to invoke toString()")
+        .l()
+        .unwrap()
+        .into();
+
+    let base_path_string: String = env
+        .get_string(&file_string)
+        .expect("Failed to get string from jstring")
+        .into();
+
+    env.delete_local_ref(ext_dir_obj)
+        .expect("Failed to delete local ref");
+    env.delete_local_ref(file_string)
+        .expect("Failed to delete local ref");
+
+    let str_data = format!("{}/MelonLoader/{}", base_path_string, package_str);
+
+    unsafe {
+        use std::ffi::CString;
+        let msg = CString::new(str_data.clone()).unwrap();
+        let tag = CString::new("MelonLoader").unwrap();
+        android_liblog_sys::__android_log_write(4, tag.as_ptr(), msg.as_ptr());
+    }
 
     let digest = md5::compute(package_str.as_bytes());
     let hash = format!("{:x}", digest);
