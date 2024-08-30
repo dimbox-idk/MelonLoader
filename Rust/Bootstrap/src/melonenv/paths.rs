@@ -193,14 +193,7 @@ pub fn cache_data_dir(env: &mut JNIEnv) {
         .expect("Failed to delete local ref");
 
     let str_data = format!("{}/MelonLoader/{}", base_path_string, package_str);
-
-    unsafe {
-        use std::ffi::CString;
-        let msg = CString::new(str_data.clone()).unwrap();
-        let tag = CString::new("MelonLoader").unwrap();
-        android_liblog_sys::__android_log_write(4, tag.as_ptr(), msg.as_ptr());
-    }
-
+    
     let digest = md5::compute(package_str.as_bytes());
     let hash = format!("{:x}", digest);
     
