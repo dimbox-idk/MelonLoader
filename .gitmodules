@@ -4,7 +4,6 @@
 [submodule "External/MonoMod"]
 	path = External/MonoMod
 	url = https://github.com/LemonLoader/MonoMod.git
-	branch = macos-m1
 [submodule "External/HarmonyX"]
 	path = External/HarmonyX
 	url = https://github.com/LemonLoader/HarmonyX.git
