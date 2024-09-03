@@ -29,7 +29,11 @@ namespace MelonLoader
                 throw new ArgumentNullException(nameof(filepath));
             IntPtr ptr = AgnosticLoadLibrary(filepath);
             if (ptr == IntPtr.Zero)
-                throw new Exception($"Unable to Load Native Library {filepath}!");
+            {
+                var error = Marshal.PtrToStringAnsi(dlerror());
+                throw new DlErrorException($"Unable to Load Native Library {filepath}!\ndlerror: {error}");
+            }
+
             return ptr;
         }
 
@@ -109,6 +113,9 @@ namespace MelonLoader
         [DllImport("libdl.so")]
         protected static extern IntPtr dlsym(IntPtr handle, string symbol);
 
+        [DllImport("libdl.so")]
+        protected static extern IntPtr dlerror();
+
         const int RTLD_NOW = 2; // for dlopen's flags 
         
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -144,5 +151,12 @@ namespace MelonLoader
                 fieldInfo.SetValue(Instance, GetExport(fieldType, fieldInfo.Name));
             }
         }
+    }
+
+    public class DlErrorException : Exception
+    {
+        public DlErrorException() { }
+        public DlErrorException(string message) : base(message) { }
+        public DlErrorException(string message, Exception inner) : base(message, inner) { }
     }
 }
