@@ -513,11 +513,11 @@ namespace MelonLoader
         [Obsolete("Use NativeUtils.NativeHook instead")]
         public static void NativeHookAttach(IntPtr target, IntPtr detour) => BootstrapInterop.NativeHookAttach(target, detour);
 
+        [Obsolete("Use NativeUtils.NativeHook instead")]
 #if NET6_0_OR_GREATER
         internal static void NativeHookAttachDirect(IntPtr target, IntPtr detour) => BootstrapInterop.NativeHookAttachDirect(target, detour);
 #else
         //On mono, NativeHookAttach *is* direct.
-        [Obsolete("Use NativeUtils.NativeHook instead")]
         internal static void NativeHookAttachDirect(IntPtr target, IntPtr detour) => BootstrapInterop.NativeHookAttach(target, detour);
 #endif
         [Obsolete("Use NativeUtils.NativeHook instead")]

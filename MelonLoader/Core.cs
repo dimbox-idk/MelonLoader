@@ -62,7 +62,10 @@ namespace MelonLoader
             if (MelonUtils.IsUnderWineOrSteamProton())
                 Pastel.ConsoleExtensions.Disable();
 
+#if NET6_0_OR_GREATER
             Fixes.DotnetLoadFromManagedFolderFix.Install();
+#endif
+
             Fixes.UnhandledException.Install(AppDomain.CurrentDomain);
             Fixes.ServerCertificateValidation.Install();
             Assertions.LemonAssertMapping.Setup();
@@ -141,12 +144,11 @@ namespace MelonLoader
 
         private static int PreSetup()
         {
-            if (_success)
-            {
 #if NET6_0_OR_GREATER
+            if (_success)
                 _success = Il2CppAssemblyGenerator.Run();
 #endif
-            }
+
             return _success ? 0 : 1;
         }
 
@@ -195,6 +197,9 @@ namespace MelonLoader
             var archString = MelonUtils.IsGame32Bit() ? "x86" : "x64";
             MelonLogger.MsgDirect($"Game Arch: {archString}");
             MelonLogger.MsgDirect("------------------------------");
+            MelonLogger.MsgDirect($"CommandLine: {string.Join(" ", MelonLaunchOptions.CommandLineArgs)}");
+            MelonLogger.MsgDirect("------------------------------");
+            
 
             MelonEnvironment.PrintEnvironment();
         }
