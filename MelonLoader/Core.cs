@@ -13,10 +13,6 @@ using JNISharp.NativeInterface;
 using System.Linq;
 using System.Drawing;
 
-#if NET35
-using MelonLoader.CompatibilityLayers;
-#endif
-
 #if NET6_0_OR_GREATER
 using MelonLoader.CoreClrUtils;
 #endif
