@@ -56,8 +56,8 @@ namespace MelonLoader.Il2CppAssemblyGenerator
             if (!MelonLaunchOptions.Il2CppAssemblyGenerator.OfflineMode)
                 RemoteAPI.Contact();
 
-            cpp2il = new Packages.Cpp2IL();
-            cpp2il_scrs = new Cpp2IL_StrippedCodeRegSupport(cpp2il);
+            cpp2il = new Cpp2IL();
+            //cpp2il_scrs = new Cpp2IL_StrippedCodeRegSupport(cpp2il);
 
             il2cppinterop = new Packages.Il2CppInterop();
             unitydependencies = new UnityDependencies();
@@ -70,7 +70,7 @@ namespace MelonLoader.Il2CppAssemblyGenerator
             Logger.Msg($"Using Deobfuscation Regex = {(string.IsNullOrEmpty(deobfuscationRegex.Regex) ? "null" : deobfuscationRegex.Regex)}");
 
             if (!cpp2il.Setup()
-                || !cpp2il_scrs.Setup()
+                //|| !cpp2il_scrs.Setup()
                 || !il2cppinterop.Setup()
                 || !unitydependencies.Setup()
                 || !deobfuscationMap.Setup())

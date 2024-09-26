@@ -43,8 +43,8 @@ namespace MelonLoader.Fixes
 
         public static bool PreAssemblyLoad(byte[] rawAssembly, byte[] rawSymbolStore, ref Assembly __result)
         {
-            if(MelonDebug.IsEnabled() && !Environment.StackTrace.Contains("HarmonyLib"))
-                MelonDebug.Msg($"[.NET AssemblyLoadContext Fix] Redirecting Assembly.Load call with {rawAssembly.Length}-byte assembly to AssemblyLoadContext.Default. Mod Devs: You may wish to use this explictly.");
+            //if(MelonDebug.IsEnabled() && !Environment.StackTrace.Contains("HarmonyLib"))
+            //    MelonDebug.Msg($"[.NET AssemblyLoadContext Fix] Redirecting Assembly.Load call with {rawAssembly.Length}-byte assembly to AssemblyLoadContext.Default. Mod Devs: You may wish to use this explictly.");
 
             __result = DefaultContextInternalLoad(rawAssembly, rawSymbolStore);
 
@@ -54,7 +54,7 @@ namespace MelonLoader.Fixes
 
         public static bool PreAssemblyLoadFile(string path, ref Assembly __result)
         {
-            MelonDebug.Msg($"[.NET AssemblyLoadContext Fix] Redirecting Assembly.LoadFile({path}) call to AssemblyLoadContext.Default.LoadFromAssemblyPath. Mod Devs: You may wish to use this explictly.");
+            //MelonDebug.Msg($"[.NET AssemblyLoadContext Fix] Redirecting Assembly.LoadFile({path}) call to AssemblyLoadContext.Default.LoadFromAssemblyPath. Mod Devs: You may wish to use this explictly.");
 
             string normalizedPath = Path.GetFullPath(path);
 
