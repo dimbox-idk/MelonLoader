@@ -207,7 +207,7 @@ pub fn cache_data_dir(env: &mut JNIEnv) {
     }
 }
 
-const BAD_HASHES: [&str; 11] = [
+const BAD_HASHES: [&str; 18] = [
     "95fb4cd16729627d013dc620a807c23c",
     "ffaf599e1b7e1175cd344b367e4a7ec4",
     "be1878f1900f48586eb7cab537f82f62",

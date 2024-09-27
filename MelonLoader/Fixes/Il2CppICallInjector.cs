@@ -3,9 +3,11 @@
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.InteropTypes;
 using MelonLoader.NativeUtils;
+using MonoMod.Core.Platforms;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -266,8 +268,11 @@ namespace MelonLoader.Fixes
             ilGenerator.Emit(OpCodes.Ret);
 
             // Return the New Method
-            MethodInfo newMethod = trampoline.Generate().Pin();
-            return (trampoline, newMethod, newMethod.GetNativeStart());
+            var newMethod = trampoline.Generate();
+            var triple = PlatformTriple.Current;
+            using var pin = triple.PinMethodIfNeeded(newMethod);
+
+            return (trampoline, newMethod, triple.Runtime.GetMethodEntryPoint(newMethod));
         }
 
         private static void EmitArg(this ILGenerator ilGenerator, 
