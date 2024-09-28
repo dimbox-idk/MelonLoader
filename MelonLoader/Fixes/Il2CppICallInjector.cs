@@ -83,7 +83,7 @@ namespace MelonLoader.Fixes
                     throw new Exception("Failed to get Il2CppObjectBase.Pointer");
                 _il2CppObjectBaseGetPointer = pointerProp.GetMethod;
 
-                string gameAssemblyName = "GameAssembly";
+                string gameAssemblyName = "libil2cpp.so";
                 NativeLibrary gameAssemblyLib = NativeLibrary.Load(gameAssemblyName);
                 if (gameAssemblyLib == null)
                     throw new Exception($"Failed to load {gameAssemblyName} Native Library");
