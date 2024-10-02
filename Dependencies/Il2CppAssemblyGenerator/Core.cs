@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using JNISharp.NativeInterface;
 using MelonLoader.Il2CppAssemblyGenerator.Packages;
 using MelonLoader.Modules;
@@ -94,6 +96,24 @@ namespace MelonLoader.Il2CppAssemblyGenerator
             }
             Logger.Msg("Assembly Generation Needed!");
 
+            if (!MelonLaunchOptions.Il2CppAssemblyGenerator.OfflineMode)
+            {
+                Logger.Msg("Checking for Pre-Generated Assemblies...");
+                if (TryDownloadPreGenerated(CurrentGameAssemblyHash))
+                {
+                    Logger.Msg($"Extracting to {MelonEnvironment.MelonBaseDirectory}");
+
+                    string zip = Path.Combine(BasePath, "Pregenerated.zip");
+                    ZipFile.ExtractToDirectory(zip, MelonEnvironment.MelonBaseDirectory, true);
+
+                    Logger.Msg("Extracted");
+
+                    File.Delete(zip);
+
+                    return 0;
+                }
+            }
+
             cpp2il.Cleanup();
             il2cppinterop.Cleanup();
 
@@ -122,6 +142,34 @@ namespace MelonLoader.Il2CppAssemblyGenerator
             Config.Save();
 
             return 0;
+        }
+
+        private static bool TryDownloadPreGenerated(string hash)
+        {
+            const string PREGENERATED_TEMPLATE = "https://github.com/LemonLoader/PregeneratedInteropData/raw/refs/heads/main/{0}.zip";
+
+            try
+            {
+                webClient.DownloadFile(string.Format(PREGENERATED_TEMPLATE, hash), Path.Combine(BasePath, "Pregenerated.zip"));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (ex is not HttpRequestException { StatusCode: { } } hre)
+                {
+                    Logger.Error($"Exception while Downloading Pre-Generated Assemblies: {ex}");
+                    return false;
+                }
+
+                if (hre.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Logger.Msg($"Pre-Generated Assemblies Not Found");
+                    return false;
+                }
+
+                Logger.Error($"WebException ({hre.StatusCode}) while Downloading Pre-Generated Assemblies: {ex}");
+                return false;
+            }
         }
 
         private string GetLibIl2CppPath()
