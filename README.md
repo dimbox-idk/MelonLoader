@@ -7,9 +7,9 @@
 ---
 
 <p align="center">
-	<a href="https://github.com/LemonLoader/MelonLoader2/releases/latest"><img src="https://img.shields.io/github/v/release/LemonLoader/MelonLoader2?label=latest&style=for-the-badge"></a>
-	<a href="https://github.com/LemonLoader/MelonLoader2/releases"><img src="https://img.shields.io/github/downloads/LemonLoader/MelonLoader2/total.svg?style=for-the-badge"></a>
-	<a href="https://github.com/LemonLoader/MelonLoader2/graphs/contributors"><img src="https://img.shields.io/github/contributors/LemonLoader/MelonLoader2?style=for-the-badge"></a>
+	<a href="https://github.com/LemonLoader/MelonLoader/releases/latest"><img src="https://img.shields.io/github/v/release/LemonLoader/MelonLoader?label=latest&style=for-the-badge"></a>
+	<a href="https://github.com/LemonLoader/MelonLoader/releases"><img src="https://img.shields.io/github/downloads/LemonLoader/MelonLoader/total.svg?style=for-the-badge"></a>
+	<a href="https://github.com/LemonLoader/MelonLoader/graphs/contributors"><img src="https://img.shields.io/github/contributors/LemonLoader/MelonLoader?style=for-the-badge"></a>
 	<a href="https://discord.gg/RAFGe33Y28"><img src="https://img.shields.io/discord/838613285749653534?label=discord&style=for-the-badge&color=blueviolet"></a>
 </p>
 
@@ -27,6 +27,7 @@
 - [SamboyCoding](https://github.com/SamboyCoding) - Helped me with various things
 - [Parzival](https://github.com/Parzival-3141/) - Helped me with various things
 - [zCubed](https://github.com/zCubed3/) - Helped me with various things
+- [doge15567](https://github.com/doge15567) - Testing
 
 
 ## GENERAL INFORMATION:
