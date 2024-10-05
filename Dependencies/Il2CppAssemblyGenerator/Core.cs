@@ -153,21 +153,20 @@ namespace MelonLoader.Il2CppAssemblyGenerator
                 webClient.DownloadFile(string.Format(PREGENERATED_TEMPLATE, hash), Path.Combine(BasePath, "Pregenerated.zip"));
                 return true;
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
-                if (ex is not HttpRequestException { StatusCode: { } } hre)
-                {
-                    Logger.Error($"Exception while Downloading Pre-Generated Assemblies: {ex}");
-                    return false;
-                }
-
-                if (hre.StatusCode == HttpStatusCode.NotFound)
+                if (ex.StatusCode == HttpStatusCode.NotFound)
                 {
                     Logger.Msg($"Pre-Generated Assemblies Not Found");
                     return false;
                 }
 
-                Logger.Error($"WebException ({hre.StatusCode}) while Downloading Pre-Generated Assemblies: {ex}");
+                Logger.Error($"HttpRequestException while Downloading Pre-Generated Assemblies: {ex}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Exception while Downloading Pre-Generated Assemblies: {ex}");
                 return false;
             }
         }
