@@ -13,8 +13,6 @@ body:
       label: All of the following criteria must be met
       description: Please take the time to check each critera is met properly.
       options:
-        - label: All <a href="https://github.com/LavaGang/MelonLoader/blob/master/README.md#requirements">Requirements</a> must be installed.
-          required: true
         - label: "Changed the title so that it doesn't just says \"[Bug]: \""
           required: true
         - label: I have searched the GitHub issues for my bug, even in the closed issues.
@@ -25,17 +23,16 @@ body:
     attributes:
       label: All of the following are optional to answer
       options:
-        - label: Tried reinstalling the Game.
-        - label: Tried reinstalling MelonLoader.
-        - label: Tried restarting PC.
-        - label: Was able to see the Start Screen.
+        - label: Tried reinstalling the app.
+        - label: Tried reinstalling LemonLoader.
+        - label: Tried restarting the device.
 
   - type: textarea
     id: what-happened
     attributes:
       label: Describe the issue.
       placeholder: Use this space to describe the issue you are having.
-      description: If you have a `Latest.log` file at `{Game_Directory}\MelonLoader\Latest.log`, please attach it by dragging and dropping it into the text box, or clicking the "Attach file" button at the bottom.
+      description: If you have a `Latest.log` file at `/sdcard/MelonLoader/<package name>/MelonLoader/Latest.log`, please attach it by dragging and dropping it into the text box, or clicking the "Attach file" button at the bottom.
 
         If there is no `Latest.log` file, please state that you do not have one.
     validations:
@@ -50,5 +47,5 @@ body:
       options:
         - Select an option below
         - Yes, I attached my log file to the text box above.
-        - No, I could not find a log file at `{Game_Directory}\MelonLoader\Latest.log`
+        - No, I could not find a log file
       default: 0
