@@ -44,6 +44,8 @@ namespace MelonLoader
             APKAssetManager.Initialize();
             MelonLogger.Msg("Initialized JNI");
 
+            APKAssetManager.CopyAdditionalData();
+
             if (IsBad(MelonEnvironment.PackageName))
                 throw new Exception();
 

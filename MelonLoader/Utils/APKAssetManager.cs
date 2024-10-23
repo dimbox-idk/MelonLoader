@@ -14,6 +14,42 @@ public static class APKAssetManager
         GetAndroidAssetManager();
     }
 
+    public static void CopyAdditionalData()
+    {
+        SaveItemToDirectory("copyToBase/", MelonEnvironment.MelonBaseDirectory, false);
+    }
+
+    public static void SaveItemToDirectory(string itemPath, string copyBase, bool includeInitial = true)
+    {
+        string[] contents = GetDirectoryContents(itemPath);
+        if (contents.Length == 0)
+        {
+            string path = includeInitial ? itemPath : itemPath[(itemPath.IndexOf('/') + 1)..];
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            string outPath = Path.Combine(copyBase, path);
+            string outDir = Path.GetDirectoryName(outPath);
+
+            if (!Directory.Exists(outDir))
+                Directory.CreateDirectory(outDir);
+
+            using FileStream fileStream = File.Open(outPath, FileMode.Create);
+            using Stream assetStream = GetAssetStream(itemPath);
+
+            byte[] buffer = new byte[assetStream.Length];
+            assetStream.Read(buffer, 0, buffer.Length);
+            fileStream.Write(buffer, 0, buffer.Length);
+            
+            return;
+        }
+
+        foreach (string item in contents)
+        {
+            SaveItemToDirectory(Path.Combine(itemPath, item), copyBase, includeInitial);
+        }
+    }
+
     public static byte[] GetAssetBytes(string path)
     {
         JString pathString = JNI.NewString(path);
@@ -51,6 +87,17 @@ public static class APKAssetManager
         HandleException();
 
         return new APKAssetStream(asset);
+    }
+
+    public static string[] GetDirectoryContents(string directory)
+    {
+        JString pathString = JNI.NewString(directory);
+        JObjectArray<JString> assets = JNI.CallObjectMethod<JObjectArray<JString>>(assetManager, JNI.GetMethodID(JNI.GetObjectClass(assetManager), "list", "(Ljava/lang/String;)[Ljava/lang/String;"), new JValue(pathString));
+
+        string[] cleanAssets = assets.Select(a => a.GetString()).ToArray();
+        HandleException();
+
+        return cleanAssets;
     }
 
     public static bool DoesAssetExist(string path)
