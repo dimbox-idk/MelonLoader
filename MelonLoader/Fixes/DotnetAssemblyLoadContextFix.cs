@@ -32,11 +32,6 @@ namespace MelonLoader.Fixes
 
                 //We have to load everything required for the verifier to avoid getting stuck in an infinite loop, prior to hooking AssemblyLoadContext.
                 AssemblyVerifier.EnsureInitialized();
-
-                //Now hook ALC.
-                // TODO: these don't exist in .NET 8, i don't know how important this is
-                Core.HarmonyInstance.Patch(AlcQCallLoadFromPath, new HarmonyMethod(typeof(DotnetAssemblyLoadContextFix), nameof(PreAlcLoadFromPath)));
-                Core.HarmonyInstance.Patch(AlcQCallLoadFromStream, new HarmonyMethod(typeof(DotnetAssemblyLoadContextFix), nameof(PreAlcLoadFromStream)));
             }
             catch (Exception ex) { MelonLogger.Warning($"DotnetAssemblyLoadContextFix Exception: {ex}"); }
         }
