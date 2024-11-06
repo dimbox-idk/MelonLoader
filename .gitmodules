@@ -13,3 +13,6 @@
 [submodule "External/Disarm"]
 	path = External/Disarm
 	url = https://github.com/SamboyCoding/Disarm.git
+[submodule "External/Cpp2IL"]
+	path = External/Cpp2IL
+	url = https://github.com/dimbox-idk/Cpp2IL.git
