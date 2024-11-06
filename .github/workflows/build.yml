@@ -434,8 +434,6 @@ jobs:
     steps:
       - uses: GeekyEggo/delete-artifact@v5.0.0
         with:
-          submodules: true
-        with:
           name: |
             MLCoreDebug
             MLCoreRelease
