@@ -13,3 +13,6 @@
 [submodule "External/Cpp2IL"]
 	path = External/Cpp2IL
 	url = https://github.com/dimbox-idk/Cpp2IL.git
+[submodule "External/Il2CppInterop"]
+	path = External/Il2CppInterop
+	url = https://github.com/dimbox-idk/Il2CppInterop.git
