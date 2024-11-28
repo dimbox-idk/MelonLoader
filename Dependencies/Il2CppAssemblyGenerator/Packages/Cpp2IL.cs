@@ -21,9 +21,8 @@ namespace MelonLoader.Il2CppAssemblyGenerator.Packages
 {
     internal class Cpp2IL : Models.ExecutablePackage
     {
-        internal static SemVersion NetCoreMinVersion = SemVersion.Parse("2022.1.0-pre-release.17");
-        private static SemVersion NewExecutionMinVersion = SemVersion.Parse("2022.0.999");
-        private SemVersion VersionSem;
+        internal static SemVersion NetCoreMinVersion = SemVersion.Parse("2022.1.0-pre-release.18");
+        internal SemVersion VersionSem;
         private string BaseFolder;
 
         private static string ReleaseName =>

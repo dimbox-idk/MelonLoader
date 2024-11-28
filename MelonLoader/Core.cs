@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Security;
-using MelonLoader.InternalUtils;
-using MelonLoader.MonoInternals;
-using MelonLoader.Utils;
 using System.IO;
 using bHapticsLib;
 using System.Threading;
@@ -21,7 +17,7 @@ using MelonLoader.CoreClrUtils;
 
 namespace MelonLoader
 {
-	internal static class Core
+    internal static class Core
     {
         private static bool _success = true;
 
@@ -60,10 +56,6 @@ namespace MelonLoader
             if (MelonUtils.IsUnderWineOrSteamProton())
                 Pastel.ConsoleExtensions.Disable();
 
-#if NET6_0_OR_GREATER
-            Fixes.DotnetLoadFromManagedFolderFix.Install();
-#endif
-
             Fixes.UnhandledException.Install(AppDomain.CurrentDomain);
             Fixes.ServerCertificateValidation.Install();
             Assertions.LemonAssertMapping.Setup();
@@ -72,25 +64,10 @@ namespace MelonLoader
             BootstrapInterop.SetDefaultConsoleTitleWithGameName(UnityInformationHandler.GameName, 
                 UnityInformationHandler.GameVersion);
 
-            try
-            {
-                if (!MonoLibrary.Setup()
-                    || !MonoResolveManager.Setup())
-                {
-                    _success = false;
-                    return 1;
-                }
-            }
-            catch (SecurityException)
-            {
-                MelonDebug.Msg("[MonoLibrary] Caught SecurityException, assuming not running under mono and continuing with init");
-            }
-            catch (MissingMethodException)
-            {
-                MelonDebug.Msg("[MonoLibrary] Caught MissingMethodException, assuming not running under mono and continuing with init");
-            }
+            MelonAssemblyResolver.Setup();
 
 #if NET6_0_OR_GREATER
+
             if (MelonLaunchOptions.Core.UserWantsDebugger && MelonEnvironment.IsDotnetRuntime)
             {
                 MelonLogger.Msg("[Init] User requested debugger, attempting to launch now...");
@@ -98,6 +75,24 @@ namespace MelonLoader
             }
 
             Environment.SetEnvironmentVariable("IL2CPP_INTEROP_DATABASES_LOCATION", MelonEnvironment.Il2CppAssembliesDirectory);
+
+#else
+
+            try
+            {
+                if (!MonoLibrary.Setup())
+                {
+                    _success = false;
+                    return 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                MelonDebug.Msg($"[MonoLibrary] Caught Exception: {ex}");
+                _success = false;
+                return 1;
+            }
+
 #endif
 
             MonoMod.Logs.DebugLog.OnLog += (string source, DateTime time, MonoMod.Logs.LogLevel level, string message) => MelonDebug.Msg($"[MonoMod] [{source}] [{level}] {message}");
@@ -128,7 +123,8 @@ namespace MelonLoader
             MelonCompatibilityLayer.LoadModules();
             
             MelonHandler.LoadUserlibs(MelonEnvironment.UserLibsDirectory);
-            MelonHandler.LoadMelonsFromDirectory<MelonPlugin>(MelonEnvironment.PluginsDirectory);
+            MelonHandler.LoadMelonFolders<MelonPlugin>(MelonEnvironment.PluginsDirectory);
+
             MelonEvents.MelonHarmonyEarlyInit.Invoke();
             MelonEvents.OnPreInitialization.Invoke();
 
@@ -157,14 +153,18 @@ namespace MelonLoader
                 return 1;
 
             MelonEvents.OnPreModsLoaded.Invoke();
-            MelonHandler.LoadMelonsFromDirectory<MelonMod>(MelonEnvironment.ModsDirectory);
+            MelonHandler.LoadMelonFolders<MelonMod>(MelonEnvironment.ModsDirectory);
 
             MelonEvents.OnPreSupportModule.Invoke();
             if (!SupportModule.Setup())
                 return 1;
 
             AddUnityDebugLog();
+
+#if NET6_0_OR_GREATER
             RegisterTypeInIl2Cpp.SetReady();
+            RegisterTypeInIl2CppWithInterfaces.SetReady();
+#endif
 
             MelonEvents.MelonHarmonyInit.Invoke();
             MelonEvents.OnApplicationStart.Invoke();
@@ -196,9 +196,13 @@ namespace MelonLoader
             var archString = MelonUtils.IsGame32Bit() ? "x86" : "x64";
             MelonLogger.MsgDirect($"Game Arch: {archString}");
             MelonLogger.MsgDirect("------------------------------");
-            MelonLogger.MsgDirect($"Command-Line: {string.Join(" ", MelonLaunchOptions.CommandLineArgs)}");
+            MelonLogger.MsgDirect("Command-Line: ");
+            foreach (var pair in MelonLaunchOptions.InternalArguments)
+                if (string.IsNullOrEmpty(pair.Value))
+                    MelonLogger.MsgDirect($"   {pair.Key}");
+                else
+                    MelonLogger.MsgDirect($"   {pair.Key} = {pair.Value}");
             MelonLogger.MsgDirect("------------------------------");
-            
             MelonEnvironment.PrintEnvironment();
         }
         

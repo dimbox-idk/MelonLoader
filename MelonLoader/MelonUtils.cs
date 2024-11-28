@@ -45,6 +45,7 @@ namespace MelonLoader
 
             if (!Directory.Exists(MelonEnvironment.UserLibsDirectory))
                 Directory.CreateDirectory(MelonEnvironment.UserLibsDirectory);
+            AddNativeDLLDirectory(MelonEnvironment.UserLibsDirectory);
 
             MelonHandler.Setup();
             UnityInformationHandler.Setup();
@@ -485,6 +486,21 @@ namespace MelonLoader
             if (fileInfo != null)
                 return fileInfo.ProductName;
             return null;
+        }
+
+        public static void AddNativeDLLDirectory(string path)
+        {
+            if (!IsWindows && !IsUnix)
+                return;
+
+            path = Path.GetFullPath(path);
+            if (!Directory.Exists(path))
+                return;
+
+            string envName = IsWindows ? "PATH" : "LD_LIBRARY_PATH";
+            string envSep = IsWindows ? ";" : ":";
+            string envPaths = Environment.GetEnvironmentVariable(envName);
+            Environment.SetEnvironmentVariable(envName, $"{envPaths}{envSep}{path}");
         }
 
         internal static void SetupWineCheck()
