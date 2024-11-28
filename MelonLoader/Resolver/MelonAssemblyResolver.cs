@@ -28,7 +28,6 @@ namespace MelonLoader.Resolver
                 MelonEnvironment.GameRootDirectory,
                 MelonEnvironment.OurRuntimeDirectory,
                 MelonEnvironment.Il2CppAssembliesDirectory,
-                MelonEnvironment.UnityGameManagedDirectory,
             };
             foreach (string path in searchdirlist)
                 AddSearchDirectory(path);

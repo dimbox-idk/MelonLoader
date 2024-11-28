@@ -8,6 +8,9 @@ using System.Text;
 using JNISharp.NativeInterface;
 using System.Linq;
 using System.Drawing;
+using MelonLoader.Utils;
+using MelonLoader.InternalUtils;
+using MelonLoader.Resolver;
 
 #if NET6_0_OR_GREATER
 using MelonLoader.CoreClrUtils;

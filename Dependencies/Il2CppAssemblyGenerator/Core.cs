@@ -52,16 +52,18 @@ namespace MelonLoader.Il2CppAssemblyGenerator
             BasePath = Path.GetDirectoryName(Assembly.Location);
         }
 
+#pragma warning disable IDE0051 // Remove unused private members; called via reflection
         private static int Run()
+#pragma warning restore IDE0051
         {
             Config.Initialize();
 
             if (!MelonLaunchOptions.Il2CppAssemblyGenerator.OfflineMode)
                 RemoteAPI.Contact();
 
-            Cpp2IL cpp2IL_netcore = new Cpp2IL();
+            Packages.Cpp2IL cpp2IL_netcore = new Packages.Cpp2IL();
             if (MelonUtils.IsWindows
-                && (cpp2IL_netcore.VersionSem < Cpp2IL.NetCoreMinVersion))
+                && (cpp2IL_netcore.VersionSem < Packages.Cpp2IL.NetCoreMinVersion))
                 cpp2il = new Cpp2IL_NetFramework();
             else
                 cpp2il = cpp2IL_netcore;

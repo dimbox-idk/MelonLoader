@@ -50,6 +50,7 @@
 		<ProjectReference Include="..\External\Il2CppInterop\Il2CppInterop.Common\Il2CppInterop.Common.csproj" />
 		<ProjectReference Include="..\External\Il2CppInterop\Il2CppInterop.Generator\Il2CppInterop.Generator.csproj" />
 		<ProjectReference Include="..\External\Il2CppInterop\Il2CppInterop.Runtime\Il2CppInterop.Runtime.csproj" />
+		<ProjectReference Include="..\External\Il2CppInterop\Il2CppInterop.HarmonySupport\Il2CppInterop.HarmonySupport.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\classdata.tpk" />
