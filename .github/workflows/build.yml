@@ -57,7 +57,7 @@ jobs:
         with:
           submodules: recursive
       - name: rust-toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@nightly
         with:
           toolchain: nightly
           # Target triple to install for this toolchain
@@ -131,7 +131,7 @@ jobs:
         with:
           submodules: recursive
       - name: rust-toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@nightly
         with:
           toolchain: nightly
           # Target triple to install for this toolchain
