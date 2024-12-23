@@ -18,6 +18,11 @@ jobs:
         uses: actions/setup-dotnet@v4.0.1
         with:
           dotnet-version: 7.0.x
+      - name: Compile MonoMod
+        run: |
+          cd External/MonoMod
+          dotnet build
+          cd ../../
       - name: .NET Pack
         run: dotnet pack -c Release
         working-directory: ./MelonLoader/
