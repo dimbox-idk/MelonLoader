@@ -22,7 +22,7 @@ fn unload(_: JNIEnv, _: JClass) {
 }
 
 fn load_bootstrap(env: &JNIEnv) {
-    let bootstrap_lib = load_lib(&PathBuf::from("libBootstrap.so"), libc::RTLD_LAZY)
+    let bootstrap_lib = load_lib(&PathBuf::from("libBootstrap.so"))
         .unwrap_or_else(|e| {
             error!("Failed to load libBootstrap.so: {}", e.to_string());
 
@@ -55,7 +55,7 @@ fn load_bootstrap(env: &JNIEnv) {
 }
 
 fn load_lib_unity(env: &JNIEnv) {
-    let unity_lib = load_lib(&PathBuf::from("libunity.so"), libc::RTLD_NOW | libc::RTLD_GLOBAL)
+    let unity_lib = load_lib(&PathBuf::from("libunity.so"))
         .expect("Couldn't load libunity!");
 
     let on_load: libloading::NativeMethod<fn(*mut JavaVM, *mut libc::c_void)> = unity_lib
