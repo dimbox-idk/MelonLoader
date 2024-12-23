@@ -16,6 +16,11 @@ jobs:
           submodules: recursive
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v2
+      - name: Compile MonoMod
+        run: |
+          cd External/MonoMod
+          dotnet build -c Debug
+          cd ../../
       - name: Build Melonloader Core
         shell: cmd
         run: msbuild /restore /p:Platform="Windows - x64" # Platform is actually irrelevant for core, it's compiled as AnyCPU either way
