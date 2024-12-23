@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: recursive
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v2
       - name: Build Melonloader Core
@@ -32,6 +32,11 @@ jobs:
           submodules: recursive
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v2
+      - name: Compile MonoMod
+        run: |
+          cd External/MonoMod
+          dotnet build -c Release
+          cd ../../
       - name: Build Melonloader Core
         shell: cmd
         run: msbuild /restore /p:Configuration=Release /p:Platform="Windows - x64"
