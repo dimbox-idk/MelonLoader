@@ -63,6 +63,11 @@ jobs:
           # Target triple to install for this toolchain
           targets: i686-pc-windows-msvc, x86_64-pc-windows-msvc
         # Build Rust Release
+      - name: Install ndk
+        run: |
+          cargo install cargo-ndk
+          rustup target install aarch64-linux-android
+          rustup target add aarch64-linux-android
       - name: Build Rust Release | Windows - x86
         shell: cmd
         run: cargo +nightly build --target i686-pc-windows-msvc --release
@@ -146,6 +151,7 @@ jobs:
         run: |
           cargo install cargo-ndk
           rustup target install aarch64-linux-android
+          rustup target add aarch64-linux-android
       - name: Build Rust Release | Linux - x64
         shell: bash
         run: cargo +nightly build --target x86_64-unknown-linux-gnu --release
